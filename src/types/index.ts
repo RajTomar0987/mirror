@@ -14,6 +14,7 @@ export interface Service {
   specs: Record<string, string>;
   compliance: string;
   bgClass?: string;
+  imageUrl?: string;
   heroImage?: string;
   gallery?: string[];
   process?: ProcessStep[];

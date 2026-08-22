@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
+import { OptimizedImage } from "./OptimizedImage";
 
 export interface ServiceCardProps {
   slug: string;
@@ -35,13 +36,17 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
         className="group relative flex flex-col justify-between p-8 bg-white border border-[#e5e5e5] hover:border-[#111111] transition-all duration-500 min-h-[340px] h-full overflow-hidden shadow-subtle hover:shadow-premium"
         aria-label={`View details for service: ${title}`}
       >
-        {/* Background visual image overlay if provided */}
-        {imageUrl && (
-          <div
-            className="absolute inset-0 opacity-10 group-hover:opacity-20 group-hover:scale-105 transition-all duration-700 bg-cover bg-center pointer-events-none"
-            style={{ backgroundImage: `url(${imageUrl})` }}
-          />
-        )}
+        {/* Background visual image overlay */}
+        {imageUrl ? (
+          <div className="absolute inset-0 opacity-10 group-hover:opacity-20 group-hover:scale-105 transition-all duration-700 pointer-events-none">
+            <OptimizedImage
+              src={imageUrl}
+              alt={`${title} service background reference`}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+            />
+          </div>
+        ) : null}
 
         {/* Top Header */}
         <div className="relative z-10">

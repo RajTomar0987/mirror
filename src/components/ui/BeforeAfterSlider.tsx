@@ -1,8 +1,8 @@
 "use client";
-/* eslint-disable @next/next/no-img-element */
 
 import React, { useState } from "react";
 import { motion } from "motion/react";
+import { OptimizedImage } from "./OptimizedImage";
 
 interface BeforeAfterSliderProps {
   beforeImage?: string;
@@ -42,36 +42,28 @@ export const BeforeAfterSlider = ({
     >
       {/* AFTER IMAGE (Background - Full width) */}
       <div className="absolute inset-0 w-full h-full bg-[#f7f7f5] flex items-center justify-center text-xs uppercase tracking-widest text-[#555555]">
-        {afterImage ? (
-          <img src={afterImage} alt={afterLabel} className="w-full h-full object-cover" />
-        ) : (
-          <div className="absolute inset-0 flex flex-col justify-between p-8 bg-[#f7f7f5]">
-            <span className="font-mono text-xs text-[#555555] font-bold">[{afterLabel}]</span>
-            <span className="text-center font-serif text-base md:text-lg font-light italic text-[#111111]">
-              [Completed Architectural Glass Installation]
-            </span>
-            <span className="text-right text-[10px] font-mono text-[#555555]">AS1288 Certified</span>
-          </div>
-        )}
+        <OptimizedImage
+          src={afterImage}
+          alt={afterLabel}
+          fill
+          fallbackTitle={`[${afterLabel}] Completed Architectural Glass`}
+          sizes="(max-width: 768px) 100vw, 50vw"
+        />
       </div>
 
       {/* BEFORE IMAGE (Foreground - Clipped width) */}
       <div
-        className="absolute inset-0 h-full overflow-hidden bg-[#f4f4f2]"
+        className="absolute inset-0 h-full overflow-hidden bg-[#f4f4f2] z-10"
         style={{ width: `${sliderPosition}%` }}
       >
         <div className="absolute inset-0 w-full h-full min-w-full aspect-[16/10] flex items-center justify-center text-xs uppercase tracking-widest text-[#555555]">
-          {beforeImage ? (
-            <img src={beforeImage} alt={beforeLabel} className="w-full h-full object-cover" />
-          ) : (
-            <div className="absolute inset-0 flex flex-col justify-between p-8 bg-[#f4f4f2] w-[1000px] max-w-[100vw]">
-              <span className="font-mono text-xs text-[#555555] font-bold">[{beforeLabel}]</span>
-              <span className="text-center font-serif text-base md:text-lg font-light italic text-[#111111]">
-                [Pre-Installation Site Structure]
-              </span>
-              <span className="font-mono text-[10px] text-[#555555]">Initial Site Assessment</span>
-            </div>
-          )}
+          <OptimizedImage
+            src={beforeImage}
+            alt={beforeLabel}
+            fill
+            fallbackTitle={`[${beforeLabel}] Pre-Installation Assessment`}
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
         </div>
       </div>
 

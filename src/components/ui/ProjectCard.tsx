@@ -1,10 +1,10 @@
 "use client";
-/* eslint-disable @next/next/no-img-element */
 
 import React from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
+import { OptimizedImage } from "./OptimizedImage";
 
 export interface ProjectCardProps {
   slug: string;
@@ -15,6 +15,7 @@ export interface ProjectCardProps {
   description?: string;
   imageUrl?: string;
   aspectRatio?: string;
+  isTemporaryPlaceholder?: boolean;
 }
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -26,6 +27,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   description,
   imageUrl,
   aspectRatio = "aspect-[16/10]",
+  isTemporaryPlaceholder = false,
 }) => {
   const shouldReduceMotion = useReducedMotion();
 
@@ -40,19 +42,18 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         className={`relative block w-full ${aspectRatio} bg-[#f7f7f5] border border-[#e5e5e5] hover:border-[#111111] overflow-hidden mb-6 shadow-subtle group hover:shadow-premium transition-all duration-500`}
         aria-label={`View project details for ${title}`}
       >
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={`${title} - ${category} in ${location}`}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95 group-hover:opacity-100"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-tr from-[#f4f4f2] via-[#f7f7f5] to-white opacity-90 group-hover:scale-105 transition-transform duration-700" />
-        )}
+        <OptimizedImage
+          src={imageUrl}
+          alt={`${title} - ${category} in ${location}`}
+          fill
+          fallbackTitle={`${title} — ${category}`}
+          isTemporaryPlaceholder={isTemporaryPlaceholder}
+          sizes="(max-width: 768px) 100vw, 50vw"
+        />
 
         {/* Overlay Content */}
-        <div className="absolute inset-0 flex flex-col justify-between p-8 text-[#111111] z-10 bg-gradient-to-t from-white/90 via-transparent to-white/30">
-          <div className="flex justify-between items-start">
+        <div className="absolute inset-0 flex flex-col justify-between p-8 text-[#111111] z-10 bg-gradient-to-t from-white/90 via-transparent to-white/30 pointer-events-none">
+          <div className="flex justify-between items-start pointer-events-auto">
             <span className="text-[10px] uppercase tracking-[0.2em] font-medium bg-white/90 backdrop-blur-md px-3 py-1 rounded-sm border border-[#e5e5e5] text-[#111111] shadow-subtle">
               {category}
             </span>
