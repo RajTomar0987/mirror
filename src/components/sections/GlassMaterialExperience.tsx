@@ -12,11 +12,11 @@ export const GlassMaterialExperience: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section className="py-28 md:py-36 bg-white text-[#111111] relative overflow-hidden border-b border-[#e5e5e5]">
+    <section className="py-16 sm:py-24 md:py-36 bg-white text-[#111111] relative overflow-hidden border-b border-[#e5e5e5]">
       {/* Background Subtle Texture */}
       <div className="absolute inset-0 opacity-[0.025] pointer-events-none bg-[radial-gradient(#111111_1px,transparent_1px)] [background-size:24px_24px]"></div>
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 relative z-10">
         <div className="editorial-grid items-center">
           {/* Left Column: Heading & Description */}
           <div className="col-span-12 lg:col-span-6 mb-12 lg:mb-0">
@@ -27,7 +27,7 @@ export const GlassMaterialExperience: React.FC = () => {
             </FadeIn>
 
             <Reveal delay={0.2} duration={0.9}>
-              <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light tracking-tight leading-tight mb-8 text-[#111111]">
+              <h2 className="font-serif text-3xl sm:text-5xl md:text-6xl font-light tracking-tight leading-tight mb-8 text-[#111111]">
                 THE MATERIAL <br />
                 THAT DEFINES <br />
                 <span className="italic font-normal">THE SPACE.</span>

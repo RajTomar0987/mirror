@@ -8,12 +8,12 @@ import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 export const IntroSection: React.FC = () => {
   return (
-    <section className="py-28 md:py-36 bg-[#f7f7f5] text-[#111111] overflow-hidden border-t border-b border-[#e5e5e5]">
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+    <section className="py-16 sm:py-24 md:py-36 bg-[#f7f7f5] text-[#111111] overflow-hidden border-t border-b border-[#e5e5e5]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-center">
           
           {/* Eyebrow & Headline Column */}
-          <div className="lg:col-span-12 mb-4">
+          <div className="lg:col-span-12 mb-2 sm:mb-4">
             <FadeIn direction="up" delay={0.1}>
               <span className="text-xs uppercase tracking-[0.25em] font-bold text-[#555555] block">
                 [Philosophy & Engineering]
@@ -24,7 +24,7 @@ export const IntroSection: React.FC = () => {
           {/* Left Column - Large Architectural Statement & Image */}
           <div className="lg:col-span-7 flex flex-col justify-between">
             <Reveal delay={0.2} duration={0.9}>
-              <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-tight leading-[1.15] text-[#111111] mb-10">
+              <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-tight leading-[1.15] text-[#111111] mb-6 sm:mb-10">
                 REDEFINING ARCHITECTURAL SPACE THROUGH THE LIGHT, STRENGTH, AND TIMELESS AESTHETICS OF <span className="italic font-normal">STRUCTURAL GLASS</span>.
               </h2>
             </Reveal>

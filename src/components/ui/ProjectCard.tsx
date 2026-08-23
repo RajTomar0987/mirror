@@ -49,7 +49,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         />
 
         {/* Overlay Content */}
-        <div className="absolute inset-0 flex flex-col justify-between p-8 text-[#111111] z-10 bg-gradient-to-t from-white/90 via-transparent to-white/30 pointer-events-none">
+        <div className="absolute inset-0 flex flex-col justify-between p-4 sm:p-6 md:p-8 text-[#111111] z-10 bg-gradient-to-t from-white/90 via-transparent to-white/30 pointer-events-none">
           <div className="flex justify-between items-start pointer-events-auto">
             <span className="text-[10px] uppercase tracking-[0.2em] font-medium bg-white/90 backdrop-blur-md px-3 py-1 rounded-sm border border-[#e5e5e5] text-[#111111] shadow-subtle">
               {category}

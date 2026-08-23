@@ -43,7 +43,7 @@ export const ServiceShowcase: React.FC<ServiceShowcaseProps> = ({ service, index
         </motion.div>
       </div>
 
-      <div className="p-8 md:p-12 flex-1 flex flex-col justify-between">
+      <div className="p-5 sm:p-8 md:p-12 flex-1 flex flex-col justify-between">
         <div>
           {/* Header */}
           <div className="flex items-center justify-between mb-8 pb-6 border-b border-[#e5e5e5]">

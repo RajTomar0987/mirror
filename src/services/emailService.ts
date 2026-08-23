@@ -45,9 +45,10 @@ export async function sendCustomerQuoteConfirmation(data: QuoteEmailData): Promi
 export async function sendAdminQuoteNotification(data: QuoteEmailData): Promise<{ success: boolean; error?: string }> {
   try {
     const provider = getEmailProvider();
+    const adminEmail = process.env.CONTACT_EMAIL || BUSINESS_CONFIG.email;
     const { html, text, subject } = generateQuoteAdminNotificationEmail(data);
     const result = await provider.send({
-      to: BUSINESS_CONFIG.email,
+      to: adminEmail,
       subject,
       html,
       text,
@@ -80,9 +81,10 @@ export async function sendCustomerContactConfirmation(data: ContactEmailData): P
 export async function sendAdminContactNotification(data: ContactEmailData): Promise<{ success: boolean; error?: string }> {
   try {
     const provider = getEmailProvider();
+    const adminEmail = process.env.CONTACT_EMAIL || BUSINESS_CONFIG.email;
     const { html, text, subject } = generateContactAdminNotificationEmail(data);
     const result = await provider.send({
-      to: BUSINESS_CONFIG.email,
+      to: adminEmail,
       subject,
       html,
       text,

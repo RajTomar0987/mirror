@@ -38,15 +38,15 @@ const VALUE_PROPS = [
 
 export const WhyUsSection: React.FC = () => {
   return (
-    <section className="py-28 md:py-36 bg-[#f7f7f5] text-[#111111] border-b border-[#e5e5e5]">
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
+    <section className="py-16 sm:py-24 md:py-36 bg-[#f7f7f5] text-[#111111] border-b border-[#e5e5e5]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12">
         {/* Header */}
         <FadeIn direction="up" delay={0.1}>
-          <div className="mb-20 max-w-3xl">
+          <div className="mb-12 sm:mb-20 max-w-3xl">
             <span className="text-xs uppercase tracking-[0.25em] font-bold text-[#555555] block mb-4">
               [Distinctive Value]
             </span>
-            <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light tracking-tight text-[#111111] leading-tight">
+            <h2 className="font-serif text-3xl sm:text-5xl md:text-6xl font-light tracking-tight text-[#111111] leading-tight">
               THE ARCHITECTURAL <br />
               <span className="italic font-normal">STANDARD OF EXCELLENCE</span>
             </h2>

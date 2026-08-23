@@ -185,7 +185,7 @@ export async function POST(request: Request) {
       );
     }
   } catch (err) {
-    console.error("Unexpected error in /api/quotes:", err);
+    console.error("Unexpected error in /api/quote:", err);
     return NextResponse.json(
       {
         success: false,

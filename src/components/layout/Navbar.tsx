@@ -30,6 +30,18 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   const closeMenu = () => setIsOpen(false);
 
   return (
@@ -37,13 +49,13 @@ export const Navbar = () => {
       initial={{ y: shouldReduceMotion ? 0 : -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "bg-white/95 backdrop-blur-md border-b border-[#e5e5e5] py-4 shadow-subtle text-[#111111]"
-          : "bg-white/80 backdrop-blur-sm border-b border-[#e5e5e5]/50 py-6 text-[#111111]"
+      className={`fixed top-0 left-0 right-0 z-[1001] transition-all duration-300 ${
+        scrolled || isOpen
+          ? "bg-white border-b border-[#e5e5e5] py-3.5 shadow-subtle text-[#111111]"
+          : "bg-white/95 backdrop-blur-md border-b border-[#e5e5e5]/80 py-4 md:py-5 text-[#111111]"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex items-center justify-between">
         {/* LOGO */}
         <Link
           href="/"
@@ -51,10 +63,10 @@ export const Navbar = () => {
           onClick={closeMenu}
           aria-label="Complete Glass Innovations Home"
         >
-          <span className="font-serif text-lg md:text-xl font-bold tracking-widest text-[#111111] uppercase transition-colors duration-300">
+          <span className="font-serif text-base sm:text-lg md:text-xl font-bold tracking-widest text-[#111111] uppercase transition-colors duration-300">
             COMPLETE GLASS
           </span>
-          <span className="text-[10px] tracking-[0.3em] text-[#555555] uppercase -mt-1 font-sans">
+          <span className="text-[9px] sm:text-[10px] tracking-[0.3em] text-[#555555] uppercase -mt-0.5 font-sans">
             INNOVATIONS
           </span>
         </Link>
@@ -102,11 +114,11 @@ export const Navbar = () => {
         {/* MOBILE MENU TOGGLE */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="lg:hidden text-[#111111] hover:text-[#555555] focus-visible:ring-2 focus-visible:ring-[#111111] p-1"
+          className="lg:hidden text-[#111111] hover:text-[#555555] focus-visible:ring-2 focus-visible:ring-[#111111] p-2 -mr-2"
           aria-label={isOpen ? "Close menu" : "Open menu"}
           aria-expanded={isOpen}
         >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
+          {isOpen ? <X size={26} /> : <Menu size={26} />}
         </button>
       </div>
 
@@ -114,30 +126,30 @@ export const Navbar = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] as const }}
-            className="lg:hidden fixed inset-0 top-[70px] bg-white/98 backdrop-blur-xl z-40 border-t border-[#e5e5e5]"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="lg:hidden fixed inset-0 top-[57px] bg-white z-[1000] overflow-y-auto border-t border-[#e5e5e5] flex flex-col justify-between"
           >
-            <div className="flex flex-col h-full px-6 py-12 md:px-12 justify-between">
-              <nav className="flex flex-col space-y-6" aria-label="Mobile Navigation">
+            <div className="px-6 py-8 flex flex-col justify-between min-h-[calc(100vh-57px)]">
+              <nav className="flex flex-col space-y-4" aria-label="Mobile Navigation">
                 {NAV_LINKS.map((link, index) => {
                   const isActive = pathname === link.href;
                   return (
                     <motion.div
                       key={link.href}
-                      initial={{ opacity: 0, x: 20 }}
+                      initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 + 0.1, duration: 0.3 }}
+                      transition={{ delay: index * 0.04, duration: 0.2 }}
                     >
                       <Link
                         href={link.href}
                         onClick={closeMenu}
-                        className={`text-2xl font-serif font-light tracking-wider transition-colors py-3 block border-b border-[#e5e5e5] ${
+                        className={`text-xl font-serif tracking-wider transition-colors py-3 block border-b border-[#e5e5e5] ${
                           isActive
-                            ? "text-[#111111] font-normal pl-2 border-l-2 border-l-[#111111]"
-                            : "text-[#555555]"
+                            ? "text-[#111111] font-normal pl-3 border-l-2 border-l-[#111111]"
+                            : "text-[#555555] hover:text-[#111111]"
                         }`}
                       >
                         {link.label}
@@ -147,11 +159,11 @@ export const Navbar = () => {
                 })}
               </nav>
 
-              <div className="mb-16">
+              <div className="pt-8 pb-12">
                 <Link
                   href="/quote"
                   onClick={closeMenu}
-                  className="flex items-center justify-center gap-2 bg-[#111111] text-white text-xs uppercase tracking-[0.2em] font-bold py-4 px-6 hover:bg-[#333333] transition-colors w-full"
+                  className="flex items-center justify-center gap-2 bg-[#111111] text-white text-xs uppercase tracking-[0.2em] font-bold py-4 px-6 hover:bg-[#333333] transition-colors w-full shadow-subtle text-center"
                 >
                   Get a Free Quote
                   <ArrowRight size={14} />

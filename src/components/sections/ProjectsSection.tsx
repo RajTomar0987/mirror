@@ -9,16 +9,16 @@ import { FadeIn } from "@/components/animations/FadeIn";
 
 export const ProjectsSection: React.FC = () => {
   return (
-    <section className="py-28 md:py-36 bg-[#f7f7f5] text-[#111111] border-b border-[#e5e5e5]">
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
+    <section className="py-16 sm:py-24 md:py-36 bg-[#f7f7f5] text-[#111111] border-b border-[#e5e5e5]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-20 gap-6 sm:gap-8">
           <FadeIn direction="up" delay={0.1}>
             <div>
               <span className="text-xs uppercase tracking-[0.25em] font-bold text-[#555555] block mb-4">
                 [Selected Portfolio]
               </span>
-              <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light tracking-tight text-[#111111]">
+              <h2 className="font-serif text-3xl sm:text-5xl md:text-6xl font-light tracking-tight text-[#111111]">
                 FEATURED ARCHITECTURAL <br />
                 <span className="italic font-normal">INSTALLATIONS</span>
               </h2>

@@ -9,7 +9,7 @@ import { submitQuoteRequest } from "@/services/quoteService";
 import { sendCustomerQuoteConfirmation, sendAdminQuoteNotification } from "@/services/emailService";
 
 export interface QuoteFormProps {
-  onSuccess: () => void;
+  onSuccess?: () => void;
   preselectedService?: string;
 }
 
@@ -148,7 +148,7 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({ onSuccess, preselectedServ
       });
 
       setIsSubmitting(false);
-      onSuccess();
+      onSuccess?.();
     } catch (err) {
       console.error("Submission error:", err);
       setSubmitError("A network or server error occurred. Please try submitting again.");

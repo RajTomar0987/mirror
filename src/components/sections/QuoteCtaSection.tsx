@@ -10,7 +10,7 @@ import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 export const QuoteCtaSection: React.FC = () => {
   return (
-    <section className="py-32 md:py-40 bg-[#f4f4f2] text-[#111111] text-center relative overflow-hidden border-t border-b border-[#e5e5e5]">
+    <section className="py-16 sm:py-24 md:py-40 bg-[#f4f4f2] text-[#111111] text-center relative overflow-hidden border-t border-b border-[#e5e5e5]">
       {/* Subtle Architectural Glass Detail Background */}
       <div className="absolute inset-0 opacity-[0.08] pointer-events-none">
         <OptimizedImage
@@ -21,15 +21,15 @@ export const QuoteCtaSection: React.FC = () => {
         />
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 relative z-10">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
         <FadeIn direction="up" delay={0.1}>
-          <span className="text-xs uppercase tracking-[0.3em] text-[#555555] block mb-6 font-mono">
+          <span className="text-xs uppercase tracking-[0.3em] text-[#555555] block mb-4 sm:mb-6 font-mono">
             [Start Your Project]
           </span>
         </FadeIn>
 
         <Reveal delay={0.2} duration={0.9}>
-          <h2 className="font-serif text-4xl sm:text-5xl md:text-7xl font-light tracking-tight leading-[1.08] mb-8 text-[#111111]">
+          <h2 className="font-serif text-3xl sm:text-5xl md:text-7xl font-light tracking-tight leading-[1.08] mb-6 sm:mb-8 text-[#111111]">
             READY TO TRANSFORM <br />
             <span className="italic font-normal">YOUR SPACE?</span>
           </h2>
