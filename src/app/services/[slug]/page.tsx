@@ -6,6 +6,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SERVICES_DATA } from "@/data/services";
 import { ProjectGallery } from "@/components/ui/ProjectGallery";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { PageTransition } from "@/components/animations/PageTransition";
 import { FadeIn } from "@/components/animations/FadeIn";
 import { Reveal } from "@/components/animations/Reveal";
@@ -70,10 +71,24 @@ export default async function ServiceDetailPage({ params }: PageProps) {
             </FadeIn>
 
             <Reveal delay={0.3} duration={0.9}>
-              <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-light tracking-tight text-[#111111] max-w-4xl">
+              <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-light tracking-tight text-[#111111] max-w-4xl mb-8">
                 {service.title}
               </h1>
             </Reveal>
+
+            {/* Service Architectural Hero Banner */}
+            <FadeIn direction="up" delay={0.4}>
+              <div className="relative w-full aspect-[16/7] bg-[#f7f7f5] border border-[#e5e5e5] overflow-hidden shadow-subtle mt-4">
+                <OptimizedImage
+                  src={service.image || service.imageUrl}
+                  alt={service.imageAlt || `Architectural specification view of ${service.title}`}
+                  fill
+                  priority
+                  fallbackTitle={`${service.title} Architectural Specification`}
+                  sizes="(max-width: 1200px) 100vw, 1200px"
+                />
+              </div>
+            </FadeIn>
           </div>
         </section>
 

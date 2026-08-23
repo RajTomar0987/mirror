@@ -14,7 +14,6 @@ export interface OptimizedImageProps {
   sizes?: string;
   objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
   fallbackTitle?: string;
-  isTemporaryPlaceholder?: boolean;
   aspectRatioClass?: string;
 }
 
@@ -29,7 +28,6 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   sizes = "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw",
   objectFit = "cover",
   fallbackTitle,
-  isTemporaryPlaceholder = false,
   aspectRatioClass = "",
 }) => {
   const [hasError, setHasError] = useState(false);
@@ -42,30 +40,25 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
       <div
         className={`relative w-full h-full min-h-[180px] bg-[#f7f7f5] border border-[#e5e5e5] flex flex-col justify-between p-6 select-none ${aspectRatioClass} ${className}`}
         role="img"
-        aria-label={alt || "Architectural Glass Specification Placeholder"}
+        aria-label={alt || "Architectural Glass Specification"}
       >
         {/* Top bar metadata */}
         <div className="flex items-center justify-between text-[10px] uppercase font-mono tracking-widest text-[#555555]">
-          <span>[Architectural Asset]</span>
-          <span>AS1288 Specification</span>
+          <span>[Architectural Specification]</span>
+          <span>AS1288 Glazing Code</span>
         </div>
 
-        {/* Center title & instruction */}
+        {/* Center title */}
         <div className="text-center my-4">
           <p className="font-serif text-sm md:text-base font-light italic text-[#111111]">
             {fallbackTitle || alt || "Complete Glass Innovations Installation"}
           </p>
-          {isTemporaryPlaceholder && (
-            <span className="inline-block mt-2 text-[9px] uppercase tracking-widest font-mono text-[#555555] bg-[#e5e5e5]/50 px-2 py-0.5 rounded-xs">
-              Client Photo Pending — Placeholder View
-            </span>
-          )}
         </div>
 
         {/* Bottom grid specs */}
         <div className="flex items-center justify-between text-[9px] font-mono text-[#555555] pt-2 border-t border-[#e5e5e5]">
           <span>Toughened Safety Glass</span>
-          <span>Custom Fabrication</span>
+          <span>Bespoke Engineering</span>
         </div>
       </div>
     );
@@ -93,12 +86,6 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
         }`}
         onError={() => setHasError(true)}
       />
-
-      {isTemporaryPlaceholder && (
-        <div className="absolute top-2 right-2 z-10 bg-[#111111]/80 backdrop-blur-md text-white text-[9px] font-mono px-2 py-1 uppercase tracking-wider rounded-xs border border-white/20">
-          Sample Reference Photo
-        </div>
-      )}
     </div>
   );
 };

@@ -85,6 +85,7 @@ export default function ProjectsPage() {
                     location={project.location}
                     year={project.year}
                     description={project.description}
+                    imageUrl={project.heroImage}
                     aspectRatio="aspect-[16/10]"
                   />
                 </StaggerItem>

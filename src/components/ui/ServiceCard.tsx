@@ -12,6 +12,8 @@ export interface ServiceCardProps {
   description: string;
   index: number;
   imageUrl?: string;
+  image?: string;
+  imageAlt?: string;
   complianceCode?: string;
 }
 
@@ -21,10 +23,14 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   description,
   index,
   imageUrl,
+  image,
+  imageAlt,
   complianceCode = "AS1288",
 }) => {
   const shouldReduceMotion = useReducedMotion();
   const formattedIndex = index < 10 ? `0${index}` : `${index}`;
+  const activeImage = image || imageUrl;
+  const activeAlt = imageAlt || `Architectural ${title} glass installation`;
 
   return (
     <motion.div
@@ -33,49 +39,59 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
     >
       <Link
         href={`/services/${slug}`}
-        className="group relative flex flex-col justify-between p-8 bg-white border border-[#e5e5e5] hover:border-[#111111] transition-all duration-500 min-h-[340px] h-full overflow-hidden shadow-subtle hover:shadow-premium"
-        aria-label={`View details for service: ${title}`}
+        className="group relative flex flex-col justify-between bg-white border border-[#e5e5e5] hover:border-[#111111] transition-all duration-500 h-full overflow-hidden shadow-subtle hover:shadow-premium"
+        aria-label={`View specifications for service: ${title}`}
       >
-        {/* Background visual image overlay */}
-        {imageUrl ? (
-          <div className="absolute inset-0 opacity-10 group-hover:opacity-20 group-hover:scale-105 transition-all duration-700 pointer-events-none">
+        {/* Top 40-50% Height Image Area */}
+        <div className="relative w-full aspect-[4/3] bg-[#f7f7f5] border-b border-[#e5e5e5] overflow-hidden">
+          <motion.div
+            className="w-full h-full"
+            whileHover={shouldReduceMotion ? {} : { scale: 1.04 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
+          >
             <OptimizedImage
-              src={imageUrl}
-              alt={`${title} service background reference`}
+              src={activeImage}
+              alt={activeAlt}
               fill
-              sizes="(max-width: 768px) 100vw, 33vw"
+              fallbackTitle={title}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             />
-          </div>
-        ) : null}
-
-        {/* Top Header */}
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-8">
-            <span className="font-mono text-xs tracking-widest text-[#555555] font-bold">
-              [{formattedIndex}]
-            </span>
-            <div className="w-9 h-9 rounded-full border border-[#e5e5e5] flex items-center justify-center text-[#111111] group-hover:bg-[#111111] group-hover:text-white transition-all duration-300">
-              <ArrowUpRight size={15} />
-            </div>
-          </div>
-
-          <h3 className="font-serif text-2xl md:text-3xl font-light tracking-tight text-[#111111] mb-4 leading-tight">
-            {title}
-          </h3>
-          
-          <p className="text-sm text-[#555555] leading-relaxed font-sans font-light">
-            {description}
-          </p>
+          </motion.div>
         </div>
 
-        {/* Footer Info */}
-        <div className="relative z-10 pt-6 border-t border-[#e5e5e5] flex items-center justify-between mt-8">
-          <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-[#555555]">
-            Custom Specification
-          </span>
-          <span className="text-xs font-mono font-bold text-[#111111]">
-            {complianceCode}
-          </span>
+        {/* Card Body */}
+        <div className="flex-1 flex flex-col justify-between p-6 md:p-8">
+          <div>
+            {/* Header: Number & Arrow */}
+            <div className="flex items-center justify-between mb-6">
+              <span className="font-mono text-xs tracking-widest text-[#555555] font-bold">
+                [{formattedIndex}]
+              </span>
+              <div className="w-8 h-8 rounded-full border border-[#e5e5e5] flex items-center justify-center text-[#111111] group-hover:bg-[#111111] group-hover:text-white transition-all duration-300">
+                <ArrowUpRight size={14} />
+              </div>
+            </div>
+
+            {/* Title */}
+            <h3 className="font-serif text-2xl font-light tracking-tight text-[#111111] mb-3 leading-tight group-hover:text-[#111111]">
+              {title}
+            </h3>
+
+            {/* Description */}
+            <p className="text-xs md:text-sm text-[#555555] leading-relaxed font-sans font-light line-clamp-3">
+              {description}
+            </p>
+          </div>
+
+          {/* Footer Info */}
+          <div className="pt-5 border-t border-[#e5e5e5] flex items-center justify-between mt-6">
+            <span className="text-[9px] uppercase tracking-[0.2em] font-medium text-[#555555]">
+              Custom Specification
+            </span>
+            <span className="text-xs font-mono font-bold text-[#111111]">
+              {complianceCode}
+            </span>
+          </div>
         </div>
       </Link>
     </motion.div>

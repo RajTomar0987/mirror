@@ -7,7 +7,9 @@ export const SERVICES_DATA: Service[] = [
     shortDescription: "Sleek, transparent safety barriers that optimize views and maximize light transmission for modern balconies, stairs, and voids.",
     description: "Sleek, transparent safety barriers that optimize views and maximize light transmission for modern balconies, stairs, and voids.",
     content: "Our custom glass balustrades provide the perfect blend of structural safety and visual openness. Designed for both internal staircases and external balconies, they offer uninterrupted views and a sleek, contemporary aesthetic that increases property value and spatial flow.",
+    image: "/images/services/glass-balustrades.jpg",
     imageUrl: "/images/services/glass-balustrades.jpg",
+    imageAlt: "Architectural frameless glass balustrade installation for balcony with stainless steel spigots",
     features: [
       "Fully frameless, semi-frameless, or patch-fitted configurations",
       "Sourced from premium, heavy-duty toughened safety glass (12mm to 19mm)",
@@ -34,7 +36,9 @@ export const SERVICES_DATA: Service[] = [
     shortDescription: "Premium frameless structural glass panels engineered for clean lines and a contemporary architectural aesthetic.",
     description: "Premium frameless structural glass panels engineered for clean lines and a contemporary architectural aesthetic.",
     content: "Frameless glass installations represent the pinnacle of modern minimalism. By removing bulky frames and visual interruptions, these glass systems create light-filled, fluid spaces. Ideal for partitions, facades, entries, and glass roofs.",
+    image: "/images/services/frameless-glass.jpg",
     imageUrl: "/images/services/frameless-glass.jpg",
+    imageAlt: "Minimalist structural frameless glass wall partition and pivot door entry",
     features: [
       "Premium architectural low-iron glass for absolute transparency",
       "Heavy duty patch fittings, glass-to-glass clamps, and structural silicone joints",
@@ -61,7 +65,9 @@ export const SERVICES_DATA: Service[] = [
     shortDescription: "Custom frameless and semi-frameless glass shower enclosures tailored to elevate luxury bathrooms with flawless structural integrity.",
     description: "Custom frameless and semi-frameless glass shower enclosures tailored to elevate luxury bathrooms with flawless structural integrity.",
     content: "Transform your bathroom into a luxury sanctuary with custom frameless shower screens. Engineered for clean aesthetics, we measure and fit each panel to suit your bathroom tiles, ensuring perfect water containment and smooth hinge operations.",
+    image: "/images/services/shower-screens.jpg",
     imageUrl: "/images/services/shower-screens.jpg",
+    imageAlt: "Luxury custom 10mm frameless glass shower screen with matte black brass hardware",
     features: [
       "10mm clear toughened safety glass with polished flat edges",
       "Premium solid brass hardware (hinges, brackets, handles)",
@@ -88,7 +94,9 @@ export const SERVICES_DATA: Service[] = [
     shortDescription: "Architectural pool fencing compliance without sacrificing visual connection. Premium spigots and structural glass panels.",
     description: "Architectural pool fencing compliance without sacrificing visual connection. Premium spigots and structural glass panels.",
     content: "Keep your family safe while maintaining a beautiful, open view of your outdoor pool area. Our frameless glass pool fencing solutions combine sleek premium spigots with heavy-duty safety glass, creating a strong, secure barrier that complies with rigorous safety standards.",
+    image: "/images/services/pool-fencing.jpg",
     imageUrl: "/images/services/pool-fencing.jpg",
+    imageAlt: "Fully frameless 12mm glass pool fencing with marine-grade 2205 stainless steel spigots",
     features: [
       "Fully frameless glass panels supported by heavy-duty floor spigots",
       "Duplex 2205 marine-grade stainless steel spigots (highly rust-resistant)",
@@ -115,7 +123,9 @@ export const SERVICES_DATA: Service[] = [
     shortDescription: "Polished and painted safety glass splashbacks, bringing seamless elegance and easy maintenance to modern kitchens.",
     description: "Polished and painted safety glass splashbacks, bringing seamless elegance and easy maintenance to modern kitchens.",
     content: "Eliminate tile grout lines and add a striking, reflective focal point to your kitchen or bathroom. Our custom glass splashbacks are made from toughened safety glass painted on the rear surface, providing a highly durable, heat-resistant, and hygienic panel.",
+    image: "/images/services/glass-splashbacks.jpg",
     imageUrl: "/images/services/glass-splashbacks.jpg",
+    imageAlt: "Seamless painted low-iron toughened glass splashback in modern kitchen",
     features: [
       "6mm toughened safety glass suitable for gas cooktops",
       "Custom color matches (Dulux color range, metallics, custom tints)",
@@ -142,7 +152,9 @@ export const SERVICES_DATA: Service[] = [
     shortDescription: "Bespoke silvered glass and polished-edge mirrors designed to open up spaces and reflect light in contemporary interiors.",
     description: "Bespoke silvered glass and polished-edge mirrors designed to open up spaces and reflect light in contemporary interiors.",
     content: "A custom-designed mirror can instantly transform a room, making it feel larger, brighter, and more sophisticated. From floor-to-ceiling gym mirrors to backlit bathroom vanity mirrors and bronzed decorative accent mirrors, we design and install to fit your dimensions.",
+    image: "/images/services/mirrors.jpg",
     imageUrl: "/images/services/mirrors.jpg",
+    imageAlt: "Custom polished edge wall mirror installed in architectural interior",
     features: [
       "Premium silvered glass for high reflection clarity without distortion",
       "Polished flat edges, beveled borders, or framed surrounds",
@@ -169,7 +181,9 @@ export const SERVICES_DATA: Service[] = [
     shortDescription: "Prompt window and glass replacement services to restore safety, insulation, and compliance to your home or office.",
     description: "Prompt window and glass replacement services to restore safety, insulation, and compliance to your home or office.",
     content: "Broken glass poses safety and security risks. We provide professional glazing repair services, replacing cracked or shattered panels with compliant safety glass. We also handle retrofitting double-glazed units and upgrading old glass to safety standard codes.",
+    image: "/images/services/window-repairs.jpg",
     imageUrl: "/images/services/window-repairs.jpg",
+    imageAlt: "Professional safety glass replacement for residential window frame",
     features: [
       "Replacement of broken window panes in timber, aluminium, or steel frames",
       "Upgrading old annealed glass in low-level panels to safety glass",
@@ -196,7 +210,9 @@ export const SERVICES_DATA: Service[] = [
     shortDescription: "Professionally fitted dog and cat doors installed directly into toughened glass sliding doors and panels.",
     description: "Professionally fitted dog and cat doors installed directly into toughened glass sliding doors and panels.",
     content: "Provide your pets with independent access without ruining your view or compromising safety. We replace your existing door glass with a brand-new, custom-toughened glass panel pre-cut in our factory to fit a high-quality pet door unit.",
+    image: "/images/services/pet-doors.jpg",
     imageUrl: "/images/services/pet-doors.jpg",
+    imageAlt: "Transparent poly-carbonate pet flap installed in custom toughened glass door panel",
     features: [
       "High-grade poly-carbonate cat and dog doors with multi-way lock systems",
       "Glass panels are custom-toughened after the hole is cut (never cut on site)",

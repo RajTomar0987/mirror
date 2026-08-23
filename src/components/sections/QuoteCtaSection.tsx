@@ -6,13 +6,24 @@ import { ArrowRight } from "lucide-react";
 import { FadeIn } from "@/components/animations/FadeIn";
 import { Reveal } from "@/components/animations/Reveal";
 import { MagneticButton } from "@/components/animations/MagneticButton";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 export const QuoteCtaSection: React.FC = () => {
   return (
     <section className="py-32 md:py-40 bg-[#f4f4f2] text-[#111111] text-center relative overflow-hidden border-t border-b border-[#e5e5e5]">
+      {/* Subtle Architectural Glass Detail Background */}
+      <div className="absolute inset-0 opacity-[0.08] pointer-events-none">
+        <OptimizedImage
+          src="/images/about/staircase-balustrade.jpg"
+          alt="Architectural glass texture backdrop"
+          fill
+          sizes="100vw"
+        />
+      </div>
+
       <div className="max-w-4xl mx-auto px-6 relative z-10">
         <FadeIn direction="up" delay={0.1}>
-          <span className="text-xs uppercase tracking-[0.3em] text-[#555555] block mb-6">
+          <span className="text-xs uppercase tracking-[0.3em] text-[#555555] block mb-6 font-mono">
             [Start Your Project]
           </span>
         </FadeIn>

@@ -8,67 +8,105 @@ import { GlassScene } from "@/components/3d/GlassScene";
 import { Reveal } from "@/components/animations/Reveal";
 import { FadeIn } from "@/components/animations/FadeIn";
 import { MagneticButton } from "@/components/animations/MagneticButton";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 export const HeroSection: React.FC = () => {
   return (
-    <section className="relative min-h-screen w-full flex flex-col justify-between pt-36 pb-12 overflow-hidden bg-white text-[#111111]">
-      {/* 3D Canvas Integration Point */}
+    <section className="relative min-h-screen w-full flex flex-col justify-between pt-32 md:pt-36 pb-12 overflow-hidden bg-white text-[#111111]">
+      {/* 3D Canvas Ambient Overlay */}
       <GlassScene />
 
-      {/* Hero Content Layer */}
-      <div className="flex-1 flex flex-col justify-center max-w-7xl mx-auto px-6 md:px-12 w-full z-10">
-        <div className="max-w-3xl">
-          {/* Eyebrow */}
-          <FadeIn direction="up" delay={0.1} duration={0.6}>
-            <span className="block text-xs md:text-sm uppercase tracking-[0.3em] font-bold text-[#555555] mb-6">
-              Architectural Glass Solutions
-            </span>
-          </FadeIn>
+      {/* Hero Editorial Grid */}
+      <div className="flex-1 flex items-center max-w-7xl mx-auto px-6 md:px-12 w-full z-10 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center w-full">
+          
+          {/* Left Column: Headline, Copy & CTAs */}
+          <div className="lg:col-span-7 flex flex-col justify-center">
+            {/* Eyebrow */}
+            <FadeIn direction="up" delay={0.1} duration={0.6}>
+              <span className="block text-xs md:text-sm uppercase tracking-[0.3em] font-bold text-[#555555] mb-6">
+                [Architectural Glass Solutions]
+              </span>
+            </FadeIn>
 
-          {/* Main Heading Reveal */}
-          <Reveal delay={0.2} duration={0.9}>
-            <h1 className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light tracking-tight leading-[1.05] text-[#111111] mb-8">
-              GLASS, <br />
-              DESIGNED FOR <br />
-              <span className="italic font-normal">MODERN LIVING.</span>
-            </h1>
-          </Reveal>
+            {/* Main Heading Reveal */}
+            <Reveal delay={0.2} duration={0.9}>
+              <h1 className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light tracking-tight leading-[1.05] text-[#111111] mb-8">
+                GLASS, <br />
+                DESIGNED FOR <br />
+                <span className="italic font-normal">MODERN LIVING.</span>
+              </h1>
+            </Reveal>
 
-          {/* Supporting Text Fade */}
-          <FadeIn direction="up" delay={0.4} duration={0.7}>
-            <p className="text-base md:text-lg lg:text-xl text-[#555555] leading-relaxed mb-10 max-w-xl font-sans font-light">
-              Exquisite custom architectural glass engineered for structural compliance, spatial clarity, and contemporary Australian living spaces.
-            </p>
-          </FadeIn>
+            {/* Supporting Text Fade */}
+            <FadeIn direction="up" delay={0.4} duration={0.7}>
+              <p className="text-base md:text-lg lg:text-xl text-[#555555] leading-relaxed mb-10 max-w-xl font-sans font-light">
+                Exquisite custom architectural glass engineered for structural compliance, spatial clarity, and contemporary Australian living spaces.
+              </p>
+            </FadeIn>
 
-          {/* CTAs */}
-          <FadeIn direction="up" delay={0.5} duration={0.7}>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-              <MagneticButton>
-                <Link
-                  href="/projects"
-                  className="group flex items-center justify-center gap-3 bg-[#111111] text-white text-xs uppercase tracking-[0.2em] font-bold py-4 px-8 hover:bg-[#333333] transition-all duration-300 shadow-premium"
-                >
-                  View Our Work
-                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </MagneticButton>
+            {/* CTAs */}
+            <FadeIn direction="up" delay={0.5} duration={0.7}>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                <MagneticButton>
+                  <Link
+                    href="/projects"
+                    className="group flex items-center justify-center gap-3 bg-[#111111] text-white text-xs uppercase tracking-[0.2em] font-bold py-4 px-8 hover:bg-[#333333] transition-all duration-300 shadow-premium"
+                  >
+                    View Our Work
+                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </MagneticButton>
 
-              <MagneticButton>
-                <Link
-                  href="/quote"
-                  className="group flex items-center justify-center gap-2 border border-[#e5e5e5] bg-white text-[#111111] text-xs uppercase tracking-[0.2em] font-bold py-4 px-8 hover:bg-[#f7f7f5] transition-all duration-300 shadow-subtle"
-                >
-                  Get a Free Quote
-                </Link>
-              </MagneticButton>
-            </div>
-          </FadeIn>
+                <MagneticButton>
+                  <Link
+                    href="/quote"
+                    className="group flex items-center justify-center gap-2 border border-[#e5e5e5] bg-white text-[#111111] text-xs uppercase tracking-[0.2em] font-bold py-4 px-8 hover:bg-[#f7f7f5] transition-all duration-300 shadow-subtle"
+                  >
+                    Get a Free Quote
+                  </Link>
+                </MagneticButton>
+              </div>
+            </FadeIn>
+          </div>
+
+          {/* Right Column: High-Resolution Architectural Glass Hero Photo */}
+          <div className="lg:col-span-5">
+            <FadeIn direction="up" delay={0.3} duration={0.8}>
+              <div className="relative w-full aspect-[4/5] bg-[#f7f7f5] border border-[#e5e5e5] overflow-hidden shadow-premium group">
+                <OptimizedImage
+                  src="/images/hero/hero-glass-main.jpg"
+                  alt="Modern Australian luxury architectural residence with expansive floor-to-ceiling frameless glass sliding walls"
+                  fill
+                  priority
+                  fallbackTitle="Complete Glass Innovations Architectural Installation"
+                  sizes="(max-width: 1024px) 100vw, 45vw"
+                  className="group-hover:scale-[1.03] transition-transform duration-700 ease-out"
+                />
+                
+                {/* Subtle Floating Architectural Badge */}
+                <div className="absolute bottom-6 left-6 right-6 p-4 bg-white/90 backdrop-blur-md border border-[#e5e5e5] shadow-subtle flex justify-between items-center text-[#111111]">
+                  <div>
+                    <span className="block text-[10px] uppercase font-mono tracking-widest text-[#555555]">
+                      [Architectural Glazing]
+                    </span>
+                    <span className="font-serif text-sm font-light">
+                      Frameless Ocean Residence
+                    </span>
+                  </div>
+                  <span className="font-mono text-[10px] bg-[#111111] text-white px-2 py-0.5 uppercase tracking-wider">
+                    AS1288
+                  </span>
+                </div>
+              </div>
+            </FadeIn>
+          </div>
+
         </div>
       </div>
 
       {/* Motion Scroll Indicator */}
-      <div className="w-full max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center z-10 pt-8">
+      <div className="w-full max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center z-10 pt-4">
         <span className="text-[10px] uppercase tracking-[0.25em] text-[#555555] font-mono">
           [Scroll to Explore]
         </span>

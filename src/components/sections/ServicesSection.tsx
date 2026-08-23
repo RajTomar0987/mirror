@@ -46,6 +46,8 @@ export const ServicesSection: React.FC = () => {
                 title={service.title}
                 description={service.description}
                 index={index + 1}
+                image={service.image || service.imageUrl}
+                imageAlt={service.imageAlt}
                 complianceCode="AS1288"
               />
             </StaggerItem>

@@ -49,6 +49,7 @@ export const ProjectsSection: React.FC = () => {
                   location={PROJECTS_DATA[0].location}
                   year={PROJECTS_DATA[0].year}
                   description={PROJECTS_DATA[0].description}
+                  imageUrl={PROJECTS_DATA[0].heroImage}
                   aspectRatio="aspect-[16/11]"
                 />
               </FadeIn>
@@ -65,6 +66,7 @@ export const ProjectsSection: React.FC = () => {
                   category={project.project_type}
                   location={project.location}
                   year={project.year}
+                  imageUrl={project.heroImage}
                   aspectRatio="aspect-[16/10]"
                 />
               </FadeIn>

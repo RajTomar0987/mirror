@@ -15,7 +15,6 @@ export interface ProjectCardProps {
   description?: string;
   imageUrl?: string;
   aspectRatio?: string;
-  isTemporaryPlaceholder?: boolean;
 }
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -27,7 +26,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   description,
   imageUrl,
   aspectRatio = "aspect-[16/10]",
-  isTemporaryPlaceholder = false,
 }) => {
   const shouldReduceMotion = useReducedMotion();
 
@@ -47,7 +45,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           alt={`${title} - ${category} in ${location}`}
           fill
           fallbackTitle={`${title} — ${category}`}
-          isTemporaryPlaceholder={isTemporaryPlaceholder}
           sizes="(max-width: 768px) 100vw, 50vw"
         />
 
