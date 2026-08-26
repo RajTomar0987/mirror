@@ -4,19 +4,27 @@ import type { NextRequest } from "next/server";
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Protect all /admin routes except /admin/login & /admin/forgot-password
+  // If visiting /admin/login directly, redirect to unified /auth?mode=login
+  if (pathname === "/admin/login") {
+    const authUrl = new URL("/auth", request.url);
+    authUrl.searchParams.set("mode", "login");
+    return NextResponse.redirect(authUrl);
+  }
+
+  // Protect all /admin routes except /admin/forgot-password
   if (pathname.startsWith("/admin")) {
-    if (pathname === "/admin/login" || pathname === "/admin/forgot-password") {
+    if (pathname === "/admin/forgot-password") {
       return NextResponse.next();
     }
 
-    const token =
+    const adminToken =
       request.cookies.get("cgi_admin_session")?.value ||
       request.headers.get("authorization")?.replace("Bearer ", "");
 
-    if (!token) {
-      const loginUrl = new URL("/admin/login", request.url);
-      loginUrl.searchParams.set("error", "session_expired");
+    if (!adminToken) {
+      const loginUrl = new URL("/auth", request.url);
+      loginUrl.searchParams.set("mode", "login");
+      loginUrl.searchParams.set("error", "unauthorized");
       return NextResponse.redirect(loginUrl);
     }
   }

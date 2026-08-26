@@ -6,16 +6,18 @@ import { BUSINESS_CONFIG } from "@/config/business";
 const outfit = Outfit({
   variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600"],
   display: "swap",
+  preload: true,
 });
 
 const playfair = Playfair_Display({
   variable: "--font-serif",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "600"],
   style: ["normal", "italic"],
   display: "swap",
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -57,7 +59,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${outfit.variable} ${playfair.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`${outfit.variable} ${playfair.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col bg-brand-bg text-brand-charcoal font-sans selection:bg-brand-ice selection:text-brand-charcoal-light overflow-x-hidden w-full">
         {children}
       </body>

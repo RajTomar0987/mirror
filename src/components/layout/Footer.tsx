@@ -137,6 +137,9 @@ export const Footer: React.FC = () => {
             <Link href="/terms" className="hover:text-white transition-colors">
               Terms of Service
             </Link>
+            <Link href="/auth?mode=login" className="hover:text-white transition-colors">
+              Portal Access
+            </Link>
           </div>
         </div>
       </div>

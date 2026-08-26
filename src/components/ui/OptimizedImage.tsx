@@ -31,9 +31,31 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   aspectRatioClass = "",
 }) => {
   const [hasError, setHasError] = useState(false);
+  const [triedFallbackJpg, setTriedFallbackJpg] = useState(false);
+
+  // Auto-resolve WebP format for /images/ assets
+  const initialResolvedSrc = React.useMemo(() => {
+    if (!src) return "";
+    if (typeof src === "string" && src.startsWith("/images/") && src.endsWith(".jpg")) {
+      return src.replace(/\.jpg$/, ".webp");
+    }
+    return src;
+  }, [src]);
+
+  const [currentSrc, setCurrentSrc] = useState(initialResolvedSrc);
+
+  const handleError = () => {
+    // If webp fails, try original jpg before showing graphic fallback
+    if (currentSrc && currentSrc.endsWith(".webp") && !triedFallbackJpg) {
+      setTriedFallbackJpg(true);
+      setCurrentSrc(currentSrc.replace(/\.webp$/, ".jpg"));
+    } else {
+      setHasError(true);
+    }
+  };
 
   // If no source provided or error encountered during loading
-  const showFallback = !src || hasError;
+  const showFallback = !currentSrc || hasError;
 
   if (showFallback) {
     return (
@@ -72,20 +94,22 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   return (
     <div className={`relative overflow-hidden ${fill ? "w-full h-full" : ""} ${aspectRatioClass} ${className}`}>
       <Image
-        src={src}
+        src={currentSrc}
         alt={alt || "Architectural Glass Installation"}
         {...imageProps}
         priority={priority}
         loading={priority ? "eager" : "lazy"}
-        className={`w-full h-full transition-all duration-500 ${
+        decoding={priority ? "sync" : "async"}
+        className={`w-full h-full transition-transform duration-700 ease-out ${
           objectFit === "cover"
             ? "object-cover"
             : objectFit === "contain"
             ? "object-contain"
             : "object-fill"
         }`}
-        onError={() => setHasError(true)}
+        onError={handleError}
       />
     </div>
   );
 };
+

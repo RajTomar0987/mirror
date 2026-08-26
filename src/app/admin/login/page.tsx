@@ -49,7 +49,7 @@ function AdminLoginForm() {
       }
 
       setAdminToken(data?.data?.access_token || "");
-      router.push("/admin");
+      router.push("/admin/quotes");
       router.refresh();
     } catch {
       setError("A network error occurred during login. Please try again.");

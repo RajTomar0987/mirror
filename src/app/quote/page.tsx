@@ -70,7 +70,7 @@ export default function QuotePage() {
 
               <FadeIn direction="up" delay={0.3}>
                 <p className="text-base md:text-xl text-[#555555] leading-relaxed font-sans font-light mb-12 max-w-xl mx-auto">
-                  Thank you for getting in touch. Your project enquiry has been submitted successfully. Our structural glazing team will review your specifications and reach out.
+                  Thank you. Your quote request has been received. Our structural glazing team will review your specifications and contact you shortly with a detailed proposal.
                 </p>
               </FadeIn>
 

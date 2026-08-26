@@ -3,6 +3,7 @@ import { quoteSchema } from "@/lib/validations/quote";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { sendCustomerQuoteConfirmation, sendAdminQuoteNotification } from "@/services/emailService";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { quotesStore } from "@/lib/quotes-store";
 
 export async function POST(request: Request) {
   try {
@@ -48,7 +49,18 @@ export async function POST(request: Request) {
 
     if (isMockEnv) {
       const mockId = `mock-quote-${Date.now()}`;
-      
+
+      quotesStore.add({
+        id: mockId,
+        name,
+        phone,
+        email,
+        suburb: activeSuburb,
+        service: activeService,
+        description: activeDescription,
+        preferredContact,
+      });
+
       try {
         await Promise.allSettled([
           sendCustomerQuoteConfirmation({
@@ -92,7 +104,26 @@ export async function POST(request: Request) {
     }
 
     try {
-      // 1. Save into `enquiries` table
+      // 1. Save into `quote_requests` table
+      const { data: quoteRequest } = await supabaseAdmin
+        .from("quote_requests")
+        .insert([
+          {
+            name,
+            email,
+            phone,
+            project_type: activeService,
+            location: activeSuburb,
+            budget: "Flexible",
+            message: activeDescription,
+            status: "new",
+            notes: "",
+          },
+        ])
+        .select()
+        .single();
+
+      // 2. Save into `enquiries` table for backwards compatibility
       const { data: enquiry, error: enquiryError } = await supabaseAdmin
         .from("enquiries")
         .insert([
@@ -101,7 +132,7 @@ export async function POST(request: Request) {
             email,
             phone,
             project_type: activeService,
-            message: `[Suburb: ${activeSuburb}] ${activeDescription}`,
+            message: `[Location: ${activeSuburb}] ${activeDescription}`,
             status: "new",
           },
         ])
@@ -112,7 +143,7 @@ export async function POST(request: Request) {
         console.warn("Supabase enquiries insert notice:", enquiryError.message);
       }
 
-      // 2. Save into `quotes` table
+      // 3. Save into `quotes` table
       const { data: quote } = await supabaseAdmin
         .from("quotes")
         .insert([
@@ -121,8 +152,11 @@ export async function POST(request: Request) {
             phone,
             email,
             suburb: activeSuburb,
+            location: activeSuburb,
             service: activeService,
+            project_type: activeService,
             description: activeDescription,
+            message: activeDescription,
             preferred_contact: preferredContact,
             status: "new",
           },
@@ -130,7 +164,18 @@ export async function POST(request: Request) {
         .select()
         .single();
 
-      const quoteId = quote?.id || enquiry?.id || `quote-${Date.now()}`;
+      const quoteId = quoteRequest?.id || quote?.id || enquiry?.id || `quote-${Date.now()}`;
+
+      quotesStore.add({
+        id: quoteId,
+        name,
+        phone,
+        email,
+        suburb: activeSuburb,
+        service: activeService,
+        description: activeDescription,
+        preferredContact,
+      });
 
       // 3. Send email notifications
       try {

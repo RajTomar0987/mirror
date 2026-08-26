@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: "/projects", label: "Projects" },
   { href: "/why-us", label: "Why Us" },
   { href: "/contact", label: "Contact" },
+  { href: "/auth?mode=login", label: "Login" },
 ];
 
 export const Navbar = () => {

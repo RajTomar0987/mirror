@@ -2,13 +2,22 @@
 
 import React from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { ArrowRight, ArrowDown } from "lucide-react";
 import { motion } from "motion/react";
-import { GlassScene } from "@/components/3d/GlassScene";
+import { MobileFallback } from "@/components/3d/MobileFallback";
 import { Reveal } from "@/components/animations/Reveal";
 import { FadeIn } from "@/components/animations/FadeIn";
 import { MagneticButton } from "@/components/animations/MagneticButton";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
+
+const GlassScene = dynamic(
+  () => import("@/components/3d/GlassScene").then((mod) => mod.GlassScene),
+  {
+    ssr: false,
+    loading: () => <MobileFallback />,
+  }
+);
 
 export const HeroSection: React.FC = () => {
   return (

@@ -65,16 +65,27 @@ export async function POST(request: Request) {
       );
     }
 
-    // 2. Verify user exists in public.admins table with role = 'admin'
-    const { data: adminRecord, error: adminCheckError } = await supabaseAdmin
-      .from("admins")
+    // 2. Verify user has admin role in profiles or admins table
+    const { data: profileRecord } = await supabaseAdmin
+      .from("profiles")
       .select("id, email, role")
       .eq("id", authData.user.id)
       .single();
 
-    if (adminCheckError || !adminRecord || adminRecord.role !== "admin") {
+    let isAdmin = profileRecord?.role === "admin";
+
+    if (!isAdmin) {
+      const { data: adminRecord } = await supabaseAdmin
+        .from("admins")
+        .select("id, email, role")
+        .eq("id", authData.user.id)
+        .single();
+      isAdmin = adminRecord?.role === "admin";
+    }
+
+    if (!isAdmin) {
       return NextResponse.json(
-        { success: false, error: "Access denied. Account lacks administrative privileges." },
+        { success: false, error: "Access denied. Your account does not possess administrator privileges." },
         { status: 403 }
       );
     }
@@ -88,7 +99,7 @@ export async function POST(request: Request) {
         user: {
           id: authData.user.id,
           email: authData.user.email,
-          role: adminRecord.role,
+          role: "admin",
         },
       },
     });

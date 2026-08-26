@@ -50,12 +50,19 @@ export interface QuoteRequest {
   name: string;
   phone: string;
   email: string;
-  suburb: string;
-  service: string;
-  description: string;
-  preferredContact: "email" | "phone" | "sms";
-  status?: "pending" | "reviewed" | "contacted" | "completed";
+  suburb?: string;
+  location?: string;
+  service?: string;
+  project_type?: string;
+  description?: string;
+  message?: string;
+  budget?: string;
+  notes?: string;
+  preferredContact?: "email" | "phone" | "sms";
+  preferred_contact?: "email" | "phone" | "sms" | string;
+  status?: "new" | "contacted" | "completed" | "pending" | "reviewed" | "quote_sent" | "in_progress" | "closed" | string;
   createdAt?: string;
+  created_at?: string;
 }
 
 export interface Review {
