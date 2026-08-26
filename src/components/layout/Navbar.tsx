@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Menu, X, ArrowRight } from "lucide-react";
-import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import { Menu, X, ArrowRight, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { MagneticButton } from "@/components/animations/MagneticButton";
 
 const NAV_LINKS = [
@@ -19,7 +19,6 @@ export const Navbar = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,149 +29,186 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Reset mobile menu state on route change synchronously during render
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setIsOpen(false);
+  }
+
   // Lock body scroll when mobile menu is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
     } else {
       document.body.style.overflow = "";
+      document.body.style.touchAction = "";
     }
     return () => {
       document.body.style.overflow = "";
+      document.body.style.touchAction = "";
     };
   }, [isOpen]);
 
   const closeMenu = () => setIsOpen(false);
 
   return (
-    <motion.header
-      initial={{ y: shouldReduceMotion ? 0 : -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
-      className={`fixed top-0 left-0 right-0 z-[1001] transition-all duration-300 ${
-        scrolled || isOpen
-          ? "bg-white border-b border-[#e5e5e5] py-3.5 shadow-subtle text-[#111111]"
-          : "bg-white/95 backdrop-blur-md border-b border-[#e5e5e5]/80 py-4 md:py-5 text-[#111111]"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex items-center justify-between">
-        {/* LOGO */}
-        <Link
-          href="/"
-          className="group flex flex-col focus-visible:ring-2 focus-visible:ring-[#111111] rounded-sm"
-          onClick={closeMenu}
-          aria-label="Complete Glass Innovations Home"
-        >
-          <span className="font-serif text-base sm:text-lg md:text-xl font-bold tracking-widest text-[#111111] uppercase transition-colors duration-300">
-            COMPLETE GLASS
-          </span>
-          <span className="text-[9px] sm:text-[10px] tracking-[0.3em] text-[#555555] uppercase -mt-0.5 font-sans">
-            INNOVATIONS
-          </span>
-        </Link>
+    <>
+      {/* MAIN HEADER (FIXED TOP BAR) */}
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-white border-b border-[#e5e5e5] py-3.5 shadow-subtle text-[#111111]"
+            : "bg-white/95 backdrop-blur-md border-b border-[#e5e5e5]/80 py-4 md:py-5 text-[#111111]"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 flex items-center justify-between">
+          {/* LOGO */}
+          <Link
+            href="/"
+            className="group flex flex-col focus-visible:ring-2 focus-visible:ring-[#111111] rounded-sm"
+            onClick={closeMenu}
+            aria-label="Complete Glass Innovations Home"
+          >
+            <span className="font-serif text-base sm:text-lg md:text-xl font-bold tracking-widest text-[#111111] uppercase transition-colors duration-300">
+              COMPLETE GLASS
+            </span>
+            <span className="text-[9px] sm:text-[10px] tracking-[0.3em] text-[#555555] uppercase -mt-0.5 font-sans">
+              INNOVATIONS
+            </span>
+          </Link>
 
-        {/* DESKTOP NAV */}
-        <nav className="hidden lg:flex items-center space-x-8" aria-label="Main Navigation">
-          {NAV_LINKS.map((link) => {
-            const isActive = pathname === link.href;
-            return (
+          {/* DESKTOP NAV (Visible on lg: 1024px and above; hidden on mobile <= 768px) */}
+          <nav className="hidden lg:flex items-center space-x-8" aria-label="Main Navigation">
+            {NAV_LINKS.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`text-xs uppercase tracking-widest font-medium transition-all duration-300 relative py-1 focus-visible:ring-2 focus-visible:ring-[#111111] ${
+                    isActive
+                      ? "text-[#111111] font-semibold"
+                      : "text-[#555555] hover:text-[#111111]"
+                  }`}
+                >
+                  {link.label}
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeNavIndicator"
+                      className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#111111]"
+                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* DESKTOP PRIMARY CTA BUTTON */}
+          <div className="hidden lg:flex items-center">
+            <MagneticButton>
               <Link
-                key={link.href}
-                href={link.href}
-                className={`text-xs uppercase tracking-widest font-medium transition-all duration-300 relative py-1 focus-visible:ring-2 focus-visible:ring-[#111111] ${
-                  isActive
-                    ? "text-[#111111] font-semibold"
-                    : "text-[#555555] hover:text-[#111111]"
-                }`}
+                href="/quote"
+                className="group flex items-center gap-2 bg-[#111111] text-white text-xs uppercase tracking-[0.2em] font-bold py-3.5 px-6 hover:bg-[#333333] transition-all duration-300 focus-visible:ring-2 focus-visible:ring-[#111111] shadow-sm"
               >
-                {link.label}
-                {isActive && (
-                  <motion.span
-                    layoutId="activeNavIndicator"
-                    className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#111111]"
-                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                  />
-                )}
+                Get a Free Quote
+                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-            );
-          })}
-        </nav>
+            </MagneticButton>
+          </div>
 
-        {/* PRIMARY CTA BUTTON */}
-        <div className="hidden lg:flex items-center">
-          <MagneticButton>
-            <Link
-              href="/quote"
-              className="group flex items-center gap-2 bg-[#111111] text-white text-xs uppercase tracking-[0.2em] font-bold py-3.5 px-6 hover:bg-[#333333] transition-all duration-300 focus-visible:ring-2 focus-visible:ring-[#111111] shadow-sm"
-            >
-              Get a Free Quote
-              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </MagneticButton>
+          {/* MOBILE MENU TOGGLE BUTTON (Shown on <= 768px / < 1024px) */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="lg:hidden text-[#111111] hover:text-[#555555] focus-visible:ring-2 focus-visible:ring-[#111111] p-2 -mr-2 flex items-center justify-center"
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isOpen}
+          >
+            {isOpen ? <X size={26} /> : <Menu size={26} />}
+          </button>
         </div>
+      </header>
 
-        {/* MOBILE MENU TOGGLE */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="lg:hidden text-[#111111] hover:text-[#555555] focus-visible:ring-2 focus-visible:ring-[#111111] p-2 -mr-2"
-          aria-label={isOpen ? "Close menu" : "Open menu"}
-          aria-expanded={isOpen}
-        >
-          {isOpen ? <X size={26} /> : <Menu size={26} />}
-        </button>
-      </div>
-
-      {/* MOBILE DRAWER */}
+      {/* FULL-SCREEN MOBILE OVERLAY MENU (Z-INDEX 9999, SOLID WHITE, NO OVERLAP) */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="lg:hidden fixed inset-0 top-[57px] bg-white z-[1000] overflow-y-auto border-t border-[#e5e5e5] flex flex-col justify-between"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="lg:hidden fixed inset-0 z-[9999] bg-white flex flex-col justify-between h-[100dvh] w-full overflow-y-auto"
           >
-            <div className="px-6 py-8 flex flex-col justify-between min-h-[calc(100vh-57px)]">
-              <nav className="flex flex-col space-y-4" aria-label="Mobile Navigation">
-                {NAV_LINKS.map((link, index) => {
+            {/* OVERLAY TOP HEADER ROW */}
+            <div className="px-4 sm:px-6 md:px-12 py-4 border-b border-[#e5e5e5] flex items-center justify-between bg-white shrink-0">
+              <Link
+                href="/"
+                className="flex flex-col"
+                onClick={closeMenu}
+                aria-label="Complete Glass Innovations Home"
+              >
+                <span className="font-serif text-base sm:text-lg font-bold tracking-widest text-[#111111] uppercase">
+                  COMPLETE GLASS
+                </span>
+                <span className="text-[9px] tracking-[0.3em] text-[#555555] uppercase -mt-0.5 font-sans">
+                  INNOVATIONS
+                </span>
+              </Link>
+
+              <button
+                onClick={closeMenu}
+                className="text-[#111111] p-2 -mr-2 hover:text-[#555555] focus-visible:ring-2 focus-visible:ring-[#111111]"
+                aria-label="Close menu"
+              >
+                <X size={26} />
+              </button>
+            </div>
+
+            {/* OVERLAY NAVIGATION LINKS (VERTICALLY STACKED, INDIVIDUAL ROWS) */}
+            <div className="flex-1 px-6 py-6 sm:py-8 flex flex-col overflow-y-auto bg-white">
+              <nav className="flex flex-col w-full divide-y divide-[#e5e5e5]" aria-label="Mobile Navigation">
+                {NAV_LINKS.map((link) => {
                   const isActive = pathname === link.href;
                   return (
-                    <motion.div
+                    <Link
                       key={link.href}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.04, duration: 0.2 }}
+                      href={link.href}
+                      onClick={closeMenu}
+                      className={`py-4 sm:py-5 flex items-center justify-between text-xl sm:text-2xl font-serif tracking-wider transition-all duration-200 ${
+                        isActive
+                          ? "text-[#111111] font-semibold pl-2"
+                          : "text-[#555555] hover:text-[#111111] hover:pl-2"
+                      }`}
                     >
-                      <Link
-                        href={link.href}
-                        onClick={closeMenu}
-                        className={`text-xl font-serif tracking-wider transition-colors py-3 block border-b border-[#e5e5e5] ${
-                          isActive
-                            ? "text-[#111111] font-normal pl-3 border-l-2 border-l-[#111111]"
-                            : "text-[#555555] hover:text-[#111111]"
+                      <span>{link.label}</span>
+                      <ChevronRight
+                        size={18}
+                        className={`transition-transform ${
+                          isActive ? "text-[#111111] opacity-100" : "text-[#999999] opacity-50"
                         }`}
-                      >
-                        {link.label}
-                      </Link>
-                    </motion.div>
+                      />
+                    </Link>
                   );
                 })}
               </nav>
+            </div>
 
-              <div className="pt-8 pb-12">
-                <Link
-                  href="/quote"
-                  onClick={closeMenu}
-                  className="flex items-center justify-center gap-2 bg-[#111111] text-white text-xs uppercase tracking-[0.2em] font-bold py-4 px-6 hover:bg-[#333333] transition-colors w-full shadow-subtle text-center"
-                >
-                  Get a Free Quote
-                  <ArrowRight size={14} />
-                </Link>
-              </div>
+            {/* OVERLAY BOTTOM CTA */}
+            <div className="p-6 border-t border-[#e5e5e5] bg-white shrink-0">
+              <Link
+                href="/quote"
+                onClick={closeMenu}
+                className="flex items-center justify-center gap-3 bg-[#111111] text-white text-xs uppercase tracking-[0.2em] font-bold py-4 px-6 hover:bg-[#333333] transition-colors w-full shadow-subtle text-center"
+              >
+                Get a Free Quote
+                <ArrowRight size={14} />
+              </Link>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.header>
+    </>
   );
 };

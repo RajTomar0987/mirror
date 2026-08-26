@@ -3,6 +3,7 @@ import { quoteSchema } from "@/lib/validations/quote";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { sendCustomerQuoteConfirmation, sendAdminQuoteNotification } from "@/services/emailService";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { quotesStore } from "@/lib/quotes-store";
 
 export async function POST(request: Request) {
   try {
@@ -48,6 +49,17 @@ export async function POST(request: Request) {
 
     if (isMockEnv) {
       const mockId = `mock-quote-${Date.now()}`;
+      
+      quotesStore.add({
+        id: mockId,
+        name,
+        phone,
+        email,
+        suburb: activeSuburb,
+        service: activeService,
+        description: activeDescription,
+        preferredContact,
+      });
       
       try {
         await Promise.allSettled([
@@ -131,6 +143,17 @@ export async function POST(request: Request) {
         .single();
 
       const quoteId = quote?.id || enquiry?.id || `quote-${Date.now()}`;
+
+      quotesStore.add({
+        id: quoteId,
+        name,
+        phone,
+        email,
+        suburb: activeSuburb,
+        service: activeService,
+        description: activeDescription,
+        preferredContact,
+      });
 
       // 3. Send email notifications
       try {

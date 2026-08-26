@@ -8,9 +8,15 @@ import { clearAdminToken } from "@/lib/auth-client";
 export const AdminNavbar: React.FC<{ onMenuToggle?: () => void }> = ({ onMenuToggle }) => {
   const router = useRouter();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+    } catch (err) {
+      console.error("Logout API error:", err);
+    }
     clearAdminToken();
     router.push("/admin/login");
+    router.refresh();
   };
 
   return (

@@ -1,16 +1,27 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Shield, Lock, Mail, Loader2, AlertCircle } from "lucide-react";
 import { setAdminToken } from "@/lib/auth-client";
 
-export default function AdminLoginPage() {
+function AdminLoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const errorParam = searchParams.get("error");
+  const initialErrorMessage =
+    errorParam === "session_expired"
+      ? "Your admin session has expired or is invalid. Please sign in again."
+      : errorParam === "access_denied"
+      ? "Access denied. Your account does not possess administrative privileges."
+      : null;
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialErrorMessage);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,88 +50,110 @@ export default function AdminLoginPage() {
 
       setAdminToken(data?.data?.access_token || "");
       router.push("/admin");
+      router.refresh();
     } catch {
-      // Development mode fallback login for demo/testing
-      setAdminToken("dev-mock-admin-token");
-      router.push("/admin");
+      setError("A network error occurred during login. Please try again.");
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-brand-charcoal flex items-center justify-center p-6 text-white">
-      <div className="w-full max-w-md bg-black/40 border border-brand-glass-border-dark p-8 md:p-10 shadow-premium">
-        <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-12 h-12 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white mb-4">
-            <Shield size={24} />
+    <div className="w-full max-w-md bg-black/40 border border-brand-glass-border-dark p-8 md:p-10 shadow-premium">
+      <div className="flex flex-col items-center text-center mb-8">
+        <div className="w-12 h-12 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white mb-4">
+          <Shield size={24} />
+        </div>
+        <h1 className="font-serif text-2xl font-light tracking-wider uppercase mb-1">
+          Admin Portal Access
+        </h1>
+        <p className="text-xs text-brand-gray font-mono">
+          Complete Glass Innovations Management
+        </p>
+      </div>
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-300 text-xs flex items-center gap-2" role="alert">
+          <AlertCircle size={16} className="flex-shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      <form onSubmit={handleLogin} className="space-y-6">
+        <div>
+          <label htmlFor="adminEmail" className="block text-xs uppercase tracking-widest text-brand-gray font-mono mb-2">
+            Admin Email *
+          </label>
+          <div className="relative">
+            <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-gray" />
+            <input
+              id="adminEmail"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@completeglass.com.au"
+              className="w-full pl-11 pr-4 py-3 bg-brand-bg-dark border border-brand-glass-border-dark text-sm text-white focus:outline-none focus:border-white font-sans"
+            />
           </div>
-          <h1 className="font-serif text-2xl font-light tracking-wider uppercase mb-1">
-            Admin Portal Access
-          </h1>
-          <p className="text-xs text-brand-gray font-mono">
-            Complete Glass Innovations Management
-          </p>
         </div>
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-300 text-xs flex items-center gap-2" role="alert">
-            <AlertCircle size={16} className="flex-shrink-0" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div>
-            <label htmlFor="adminEmail" className="block text-xs uppercase tracking-widest text-brand-gray font-mono mb-2">
-              Admin Email *
-            </label>
-            <div className="relative">
-              <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-gray" />
-              <input
-                id="adminEmail"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@completeglass.com.au"
-                className="w-full pl-11 pr-4 py-3 bg-brand-bg-dark border border-brand-glass-border-dark text-sm text-white focus:outline-none focus:border-white font-sans"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="adminPassword" className="block text-xs uppercase tracking-widest text-brand-gray font-mono mb-2">
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label htmlFor="adminPassword" className="block text-xs uppercase tracking-widest text-brand-gray font-mono">
               Password *
             </label>
-            <div className="relative">
-              <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-gray" />
-              <input
-                id="adminPassword"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••••••"
-                className="w-full pl-11 pr-4 py-3 bg-brand-bg-dark border border-brand-glass-border-dark text-sm text-white focus:outline-none focus:border-white font-sans"
-              />
-            </div>
+            <Link
+              href="/admin/forgot-password"
+              className="text-[10px] uppercase tracking-wider text-brand-gray hover:text-white transition-colors"
+            >
+              Forgot Password?
+            </Link>
           </div>
+          <div className="relative">
+            <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-gray" />
+            <input
+              id="adminPassword"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••••••"
+              className="w-full pl-11 pr-4 py-3 bg-brand-bg-dark border border-brand-glass-border-dark text-sm text-white focus:outline-none focus:border-white font-sans"
+            />
+          </div>
+        </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-4 bg-white text-brand-charcoal text-xs uppercase tracking-[0.2em] font-bold hover:bg-brand-gray-light transition-colors duration-300 flex items-center justify-center gap-2"
-          >
-            {loading ? (
-              <>
-                <Loader2 size={16} className="animate-spin" />
-                Authenticating...
-              </>
-            ) : (
-              "Sign In to Dashboard"
-            )}
-          </button>
-        </form>
-      </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-4 bg-white text-brand-charcoal text-xs uppercase tracking-[0.2em] font-bold hover:bg-brand-gray-light transition-colors duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          {loading ? (
+            <>
+              <Loader2 size={16} className="animate-spin" />
+              Authenticating...
+            </>
+          ) : (
+            "Sign In to Dashboard"
+          )}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <div className="min-h-screen bg-brand-charcoal flex items-center justify-center p-6 text-white">
+      <Suspense
+        fallback={
+          <div className="w-full max-w-md bg-black/40 border border-brand-glass-border-dark p-8 text-center text-brand-gray font-mono text-xs">
+            Loading Admin Access...
+          </div>
+        }
+      >
+        <AdminLoginForm />
+      </Suspense>
     </div>
   );
 }
