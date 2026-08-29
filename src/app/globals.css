@@ -122,6 +122,134 @@ body {
   opacity: 0;
 }
 
+/* ==========================================================================
+   PREMIUM 3D SPATIAL & ARCHITECTURAL DEPTH UTILITIES
+   ========================================================================== */
+
+.perspective-800 {
+  perspective: 800px;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-1500 {
+  perspective: 1500px;
+}
+
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* 3D Depth Card with Architectural Glass Surface */
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.35s ease;
+  will-change: transform;
+}
+
+.card-3d:hover {
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+}
+
+/* Glass Refraction Layer */
+.glass-refract {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.glass-refract-light {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(245, 247, 250, 0.75) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Physical Document Elevation */
+.document-3d-shadow {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 12px 36px -6px rgba(0,0,0,0.12), 0 30px 60px -12px rgba(0,0,0,0.18);
+}
+
+/* 3D Button Depth */
+.btn-3d {
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.btn-3d:hover {
+  transform: translateY(-2px) translateZ(8px);
+  box-shadow: 0 8px 20px -4px rgba(0, 102, 255, 0.35);
+}
+
+.btn-3d:active {
+  transform: translateY(1px) translateZ(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Floating Animations */
+@keyframes float3D {
+  0%, 100% {
+    transform: translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotateX(2deg) rotateY(-2deg);
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(0.5deg);
+  }
+}
+
+@keyframes glassGleam {
+  0% {
+    transform: translateX(-150%) skewX(-25deg);
+  }
+  100% {
+    transform: translateX(250%) skewX(-25deg);
+  }
+}
+
+.animate-float-3d {
+  animation: float3D 6s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: floatSlow 7s ease-in-out infinite;
+}
+
+.animate-gleam {
+  animation: glassGleam 4s ease-in-out infinite;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-3d,
+  .animate-float-slow,
+  .animate-gleam,
+  .card-3d {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   html {

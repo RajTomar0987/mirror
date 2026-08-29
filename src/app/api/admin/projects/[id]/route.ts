@@ -1,66 +1,65 @@
 import { NextResponse } from "next/server";
 import { verifyAdminSession } from "@/lib/auth";
-import { supabaseAdmin } from "@/lib/supabase-server";
+import { posStore } from "@/lib/pos-store";
+import { POSProjectStatus } from "@/types";
 
-interface RouteProps {
-  params: Promise<{ id: string }>;
-}
-
-export async function PATCH(request: Request, { params }: RouteProps) {
+export async function GET(
+  request: Request,
+  context: { params: Promise<{ id: string }> | { id: string } }
+) {
   try {
     const authResult = await verifyAdminSession(request);
     if (!authResult.isAdmin) {
       return NextResponse.json({ success: false, error: authResult.error || "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
-    const body = (await request.json()) as Record<string, unknown>;
+    const resolvedParams = context.params instanceof Promise ? await context.params : context.params;
+    const { id } = resolvedParams;
 
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder")) {
-      return NextResponse.json({ success: true, data: { id, ...(body || {}) } });
+    const project = posStore.getProjectById(id);
+    if (!project) {
+      return NextResponse.json({ success: false, error: "Project not found" }, { status: 404 });
     }
 
-    const { data: updatedProject, error } = await supabaseAdmin
-      .from("projects")
-      .update({ ...(body || {}), updated_at: new Date().toISOString() })
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (error) {
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true, data: updatedProject });
-  } catch {
+    return NextResponse.json({ success: true, data: project });
+  } catch (err) {
+    console.error("GET project detail error:", err);
     return NextResponse.json({ success: false, error: "Server error" }, { status: 500 });
   }
 }
 
-export async function DELETE(request: Request, { params }: RouteProps) {
+interface PatchPOSProjectBody {
+  status?: POSProjectStatus;
+}
+
+export async function PATCH(
+  request: Request,
+  context: { params: Promise<{ id: string }> | { id: string } }
+) {
   try {
     const authResult = await verifyAdminSession(request);
     if (!authResult.isAdmin) {
       return NextResponse.json({ success: false, error: authResult.error || "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
+    const resolvedParams = context.params instanceof Promise ? await context.params : context.params;
+    const { id } = resolvedParams;
 
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder")) {
-      return NextResponse.json({ success: true, message: `Project ${id} deleted (Dev Mode)` });
+    const body = (await request.json()) as PatchPOSProjectBody;
+    const { status } = body || {};
+
+    if (!status) {
+      return NextResponse.json({ success: false, error: "Status is required" }, { status: 400 });
     }
 
-    const { error } = await supabaseAdmin
-      .from("projects")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const updated = posStore.updateProjectStatus(id, status);
+    if (!updated) {
+      return NextResponse.json({ success: false, error: "Project not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, message: "Project deleted successfully" });
-  } catch {
+    return NextResponse.json({ success: true, data: updated });
+  } catch (err) {
+    console.error("PATCH project error:", err);
     return NextResponse.json({ success: false, error: "Server error" }, { status: 500 });
   }
 }

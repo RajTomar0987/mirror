@@ -41,6 +41,7 @@ export async function POST(request: Request) {
           user: {
             id: user.id,
             email: user.email,
+            name: user.fullName,
             fullName: user.fullName,
             role: user.role,
           },
@@ -112,6 +113,7 @@ export async function POST(request: Request) {
         user: {
           id: authData.user.id,
           email: authData.user.email,
+          name: profile?.full_name || authData.user.user_metadata?.full_name || "",
           fullName: profile?.full_name || authData.user.user_metadata?.full_name || "",
           role: userRole,
         },

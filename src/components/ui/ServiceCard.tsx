@@ -42,12 +42,12 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
         className="group relative flex flex-col justify-between bg-white border border-[#e5e5e5] hover:border-[#111111] transition-all duration-500 h-full overflow-hidden shadow-subtle hover:shadow-premium"
         aria-label={`View specifications for service: ${title}`}
       >
-        {/* Top 40-50% Height Image Area */}
+        {/* Image Area with hover zoom and overlay */}
         <div className="relative w-full aspect-[4/3] bg-[#f7f7f5] border-b border-[#e5e5e5] overflow-hidden">
           <motion.div
             className="w-full h-full"
-            whileHover={shouldReduceMotion ? {} : { scale: 1.04 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
+            whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
           >
             <OptimizedImage
               src={activeImage}
@@ -57,6 +57,9 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             />
           </motion.div>
+
+          {/* Subtle dark overlay on hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#111111]/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
         </div>
 
         {/* Card Body */}
@@ -68,12 +71,15 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
                 [{formattedIndex}]
               </span>
               <div className="w-8 h-8 rounded-full border border-[#e5e5e5] flex items-center justify-center text-[#111111] group-hover:bg-[#111111] group-hover:text-white transition-all duration-300">
-                <ArrowUpRight size={14} />
+                <ArrowUpRight
+                  size={14}
+                  className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300"
+                />
               </div>
             </div>
 
             {/* Title */}
-            <h3 className="font-serif text-2xl font-light tracking-tight text-[#111111] mb-3 leading-tight group-hover:text-[#111111]">
+            <h3 className="font-serif text-xl sm:text-2xl font-light tracking-tight text-[#111111] mb-3 leading-tight group-hover:text-[#111111]">
               {title}
             </h3>
 

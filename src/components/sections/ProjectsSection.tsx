@@ -6,6 +6,7 @@ import { ArrowUpRight } from "lucide-react";
 import { PROJECTS_DATA } from "@/data/projects";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { FadeIn } from "@/components/animations/FadeIn";
+import { StaggerContainer, StaggerItem } from "@/components/animations/Stagger";
 
 export const ProjectsSection: React.FC = () => {
   return (
@@ -36,8 +37,8 @@ export const ProjectsSection: React.FC = () => {
           </FadeIn>
         </div>
 
-        {/* Asymmetric Editorial Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        {/* Asymmetric Editorial Grid — Shows 4 projects */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
           {/* Main Large Featured Project */}
           {PROJECTS_DATA[0] && (
             <div className="lg:col-span-7">
@@ -56,8 +57,8 @@ export const ProjectsSection: React.FC = () => {
             </div>
           )}
 
-          {/* Secondary Column Stack */}
-          <div className="lg:col-span-5 flex flex-col space-y-10">
+          {/* Secondary Column Stack — 2 projects */}
+          <div className="lg:col-span-5 flex flex-col space-y-8 lg:space-y-10">
             {PROJECTS_DATA.slice(1, 3).map((project, idx) => (
               <FadeIn key={project.slug} direction="up" delay={0.3 + idx * 0.15} duration={0.8}>
                 <ProjectCard
@@ -73,6 +74,28 @@ export const ProjectsSection: React.FC = () => {
             ))}
           </div>
         </div>
+
+        {/* 4th project — Full width bottom row */}
+        {PROJECTS_DATA[3] && (
+          <div className="mt-8 lg:mt-10">
+            <FadeIn direction="up" delay={0.5} duration={0.8}>
+              <StaggerContainer staggerChildren={0.1} className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                <StaggerItem>
+                  <ProjectCard
+                    slug={PROJECTS_DATA[3].slug}
+                    title={PROJECTS_DATA[3].title}
+                    category={PROJECTS_DATA[3].project_type}
+                    location={PROJECTS_DATA[3].location}
+                    year={PROJECTS_DATA[3].year}
+                    description={PROJECTS_DATA[3].description}
+                    imageUrl={PROJECTS_DATA[3].heroImage}
+                    aspectRatio="aspect-[16/10]"
+                  />
+                </StaggerItem>
+              </StaggerContainer>
+            </FadeIn>
+          </div>
+        )}
       </div>
     </section>
   );

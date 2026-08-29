@@ -74,6 +74,7 @@ export async function POST(request: Request) {
           data: {
             id: newUser.id,
             email: newUser.email,
+            name: newUser.fullName,
             fullName: newUser.fullName,
             role: "user",
           },

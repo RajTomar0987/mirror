@@ -14,13 +14,12 @@ import {
   AlertCircle,
   CheckCircle2,
   ArrowLeft,
-  LogOut,
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PageTransition } from "@/components/animations/PageTransition";
 import { FadeIn } from "@/components/animations/FadeIn";
-import { setAuthSession, clearAuthSession, getAuthUser } from "@/lib/auth-client";
+import { setAuthSession } from "@/lib/auth-client";
 
 function AuthCard() {
   const router = useRouter();
@@ -33,14 +32,14 @@ function AuthCard() {
 
   const [internalMode, setInternalMode] = useState<"login" | "signup">("login");
 
-  // Determine active mode without cascading state updates
+  // Determine active mode
   const activeMode: "login" | "signup" =
     modeParam === "signup" ? "signup" : modeParam === "login" ? "login" : internalMode;
 
-  // Initial error / alert messages
+  // Initial error / alert messages based on URL query params
   const initialError =
     errorParam === "unauthorized"
-      ? "Please log in to access this protected area."
+      ? "Please log in with an administrator account to access the quote management dashboard."
       : errorParam === "session_expired"
       ? "Your session has expired. Please sign in again."
       : errorParam === "non_admin"
@@ -60,12 +59,6 @@ function AuthCard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(initialError);
   const [success, setSuccess] = useState<string | null>(messageParam || null);
-  const [loggedOutNotice, setLoggedOutNotice] = useState(false);
-
-  // Determine logged in non-admin user status
-  const authUser = typeof window !== "undefined" ? getAuthUser() : null;
-  const isNonAdminAttempt =
-    !loggedOutNotice && authUser && authUser.role === "user" && errorParam === "non_admin";
 
   const switchMode = (newMode: "login" | "signup") => {
     setInternalMode(newMode);
@@ -80,7 +73,9 @@ function AuthCard() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanEmail || !password) {
       setError("Please enter both email and password.");
       return;
     }
@@ -94,7 +89,7 @@ function AuthCard() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: email.trim(),
+          email: cleanEmail,
           password,
           remember: rememberMe,
         }),
@@ -108,6 +103,7 @@ function AuthCard() {
           user: {
             id: string;
             email: string;
+            name?: string;
             fullName?: string;
             role: "admin" | "user";
           };
@@ -115,21 +111,28 @@ function AuthCard() {
       };
 
       if (!res.ok || !data.success || !data.data) {
-        setError(data.error || "Authentication failed. Invalid email or password.");
+        setError(data.error || "Invalid email or password.");
         setLoading(false);
         return;
       }
 
       const { access_token, user } = data.data;
-      setAuthSession(access_token, user);
+      const formattedUser = {
+        id: user.id,
+        email: user.email,
+        fullName: user.name || user.fullName || user.email,
+        role: user.role,
+      };
 
+      setAuthSession(access_token, formattedUser);
+
+      // Role-based redirection
       if (user.role === "admin") {
-        router.push("/admin/quotes");
-        router.refresh();
+        router.push("/admin");
       } else {
-        setSuccess(`Welcome back, ${user.fullName || user.email}.`);
-        setLoading(false);
+        router.push("/portal");
       }
+      router.refresh();
     } catch {
       setError("A network error occurred. Please check your connection and try again.");
       setLoading(false);
@@ -138,13 +141,15 @@ function AuthCard() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanName = fullName.trim();
 
-    if (!fullName.trim() || fullName.trim().length < 2) {
+    if (!cleanName || cleanName.length < 2) {
       setError("Please enter your full name (minimum 2 characters).");
       return;
     }
 
-    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
       setError("Please enter a valid email address.");
       return;
     }
@@ -168,8 +173,8 @@ function AuthCard() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          fullName: fullName.trim(),
-          email: email.trim(),
+          fullName: cleanName,
+          email: cleanEmail,
           password,
           confirmPassword,
         }),
@@ -189,7 +194,7 @@ function AuthCard() {
 
       setSuccess(
         data.message ||
-          "Account created successfully. Please check your email to verify your account, or sign in below."
+          "Account created successfully. You can now sign in below with your credentials."
       );
       setFullName("");
       setPassword("");
@@ -202,77 +207,21 @@ function AuthCard() {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-    } catch (e) {
-      console.error("Logout error:", e);
-    }
-    clearAuthSession();
-    setLoggedOutNotice(true);
-    setError(null);
-    setSuccess("You have been signed out successfully.");
-    router.push("/");
-    router.refresh();
-  };
-
-  // If a non-admin user is logged in and trying to access admin quotes
-  if (isNonAdminAttempt && authUser) {
-    return (
-      <div className="w-full max-w-md bg-white border border-[#e5e5e5] p-8 md:p-10 shadow-premium text-center space-y-6 text-[#111111]">
-        <div className="w-14 h-14 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600 mx-auto">
-          <AlertCircle size={28} />
-        </div>
-        <div>
-          <span className="text-[10px] uppercase tracking-[0.25em] font-mono text-[#555555] block mb-1">
-            [Access Control]
-          </span>
-          <h2 className="font-serif text-2xl font-light tracking-tight text-[#111111] uppercase mb-2">
-            Access Restricted
-          </h2>
-          <p className="text-xs text-[#555555] font-sans leading-relaxed">
-            Signed in as <span className="text-[#111111] font-semibold">{authUser.email}</span>
-          </p>
-        </div>
-
-        <div className="p-4 bg-amber-50 border border-amber-200 text-amber-800 text-xs text-left leading-relaxed">
-          Your account does not have administrator access to the quote management portal.
-        </div>
-
-        <div className="space-y-3 pt-2">
-          <button
-            onClick={handleLogout}
-            className="w-full py-3.5 bg-red-600 hover:bg-red-700 text-white text-xs uppercase tracking-widest font-mono font-bold transition-colors flex items-center justify-center gap-2 shadow-sm"
-          >
-            <LogOut size={14} />
-            Sign Out
-          </button>
-          <Link
-            href="/"
-            className="block text-center text-xs uppercase tracking-widest font-mono text-[#555555] hover:text-[#111111] transition-colors pt-2"
-          >
-            Return to Homepage
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="w-full max-w-md bg-white border border-[#e5e5e5] p-6 sm:p-8 md:p-10 shadow-premium text-[#111111]">
+    <div className="w-full max-w-[420px] mx-auto bg-white border border-[#e5e5e5] p-6 sm:p-8 md:p-10 shadow-premium text-[#111111] box-border">
       {/* Header Branding */}
-      <div className="flex flex-col items-center text-center mb-8">
+      <div className="flex flex-col items-center text-center mb-7">
         <div className="w-12 h-12 rounded-full bg-[#f7f7f5] border border-[#e5e5e5] flex items-center justify-center text-[#111111] mb-3 shadow-subtle">
           <Shield size={22} />
         </div>
         <span className="text-[10px] uppercase tracking-[0.25em] font-mono text-[#555555] block mb-1">
-          [Authentication]
+          [Authentication Portal]
         </span>
         <h1 className="font-serif text-2xl sm:text-3xl font-light tracking-tight text-[#111111] uppercase">
-          {activeMode === "login" ? "Client & Staff Login" : "Create Account"}
+          {activeMode === "login" ? "Account Sign In" : "Create Account"}
         </h1>
         <p className="text-xs text-[#555555] font-sans mt-1">
-          Complete Glass Innovations Portal
+          Complete Glass Innovations Access
         </p>
       </div>
 
@@ -302,10 +251,10 @@ function AuthCard() {
         </button>
       </div>
 
-      {/* Status Messages */}
+      {/* Status & Error Messages */}
       {error && (
         <div
-          className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5 leading-relaxed"
+          className="mb-5 p-3.5 bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5 leading-relaxed"
           role="alert"
         >
           <AlertCircle size={16} className="flex-shrink-0 mt-0.5 text-red-600" />
@@ -315,7 +264,7 @@ function AuthCard() {
 
       {success && (
         <div
-          className="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-start gap-2.5 leading-relaxed"
+          className="mb-5 p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-start gap-2.5 leading-relaxed"
           role="status"
         >
           <CheckCircle2 size={16} className="flex-shrink-0 mt-0.5 text-emerald-600" />
@@ -327,16 +276,16 @@ function AuthCard() {
       {/* MODE 1: LOGIN FORM                                */}
       {/* ================================================= */}
       {activeMode === "login" && (
-        <form onSubmit={handleLogin} className="space-y-5">
+        <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label
               htmlFor="loginEmail"
-              className="block text-[10px] uppercase tracking-widest text-[#555555] font-mono mb-2 font-bold"
+              className="block text-[10px] uppercase tracking-widest text-[#555555] font-mono mb-1.5 font-bold"
             >
               Email Address *
             </label>
             <div className="relative">
-              <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#777777]" />
+              <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#777777]" />
               <input
                 id="loginEmail"
                 type="email"
@@ -345,13 +294,13 @@ function AuthCard() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@domain.com"
-                className="w-full pl-11 pr-4 py-3 bg-white border border-[#e5e5e5] text-sm text-[#111111] focus:outline-none focus:border-[#111111] font-sans transition-colors placeholder:text-[#999999]"
+                className="w-full pl-10 pr-4 py-3 bg-white border border-[#e5e5e5] text-sm text-[#111111] focus:outline-none focus:border-[#111111] font-sans transition-colors placeholder:text-[#999999]"
               />
             </div>
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-1.5">
               <label
                 htmlFor="loginPassword"
                 className="block text-[10px] uppercase tracking-widest text-[#555555] font-mono font-bold"
@@ -366,7 +315,7 @@ function AuthCard() {
               </Link>
             </div>
             <div className="relative">
-              <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#777777]" />
+              <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#777777]" />
               <input
                 id="loginPassword"
                 type={showPassword ? "text" : "password"}
@@ -375,12 +324,12 @@ function AuthCard() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full pl-11 pr-11 py-3 bg-white border border-[#e5e5e5] text-sm text-[#111111] focus:outline-none focus:border-[#111111] font-sans transition-colors placeholder:text-[#999999]"
+                className="w-full pl-10 pr-10 py-3 bg-white border border-[#e5e5e5] text-sm text-[#111111] focus:outline-none focus:border-[#111111] font-sans transition-colors placeholder:text-[#999999]"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#777777] hover:text-[#111111] p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#777777] hover:text-[#111111] p-1"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -396,19 +345,19 @@ function AuthCard() {
                 onChange={(e) => setRememberMe(e.target.checked)}
                 className="w-4 h-4 rounded-none border-[#e5e5e5] accent-[#111111]"
               />
-              <span>Remember session</span>
+              <span className="text-[11px] font-sans">Remember session</span>
             </label>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-[#111111] text-white text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#333333] transition-colors duration-300 flex items-center justify-center gap-2 disabled:opacity-50 mt-2 shadow-subtle"
+            className="w-full py-3.5 bg-[#111111] text-white text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#333333] transition-colors duration-300 flex items-center justify-center gap-2 disabled:opacity-50 mt-2 shadow-subtle cursor-pointer"
           >
             {loading ? (
               <>
                 <Loader2 size={16} className="animate-spin" />
-                Authenticating...
+                Signing In...
               </>
             ) : (
               "Sign In"
@@ -421,7 +370,7 @@ function AuthCard() {
               <button
                 type="button"
                 onClick={() => switchMode("signup")}
-                className="text-[#111111] underline hover:text-[#555555] font-semibold ml-1"
+                className="text-[#111111] underline hover:text-[#555555] font-semibold ml-1 cursor-pointer"
               >
                 Create one now
               </button>
@@ -434,16 +383,16 @@ function AuthCard() {
       {/* MODE 2: SIGN UP FORM                              */}
       {/* ================================================= */}
       {activeMode === "signup" && (
-        <form onSubmit={handleSignUp} className="space-y-4">
+        <form onSubmit={handleSignUp} className="space-y-3.5">
           <div>
             <label
               htmlFor="signupFullName"
-              className="block text-[10px] uppercase tracking-widest text-[#555555] font-mono mb-2 font-bold"
+              className="block text-[10px] uppercase tracking-widest text-[#555555] font-mono mb-1.5 font-bold"
             >
               Full Name *
             </label>
             <div className="relative">
-              <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#777777]" />
+              <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#777777]" />
               <input
                 id="signupFullName"
                 type="text"
@@ -452,7 +401,7 @@ function AuthCard() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Jane Smith"
-                className="w-full pl-11 pr-4 py-3 bg-white border border-[#e5e5e5] text-sm text-[#111111] focus:outline-none focus:border-[#111111] font-sans transition-colors placeholder:text-[#999999]"
+                className="w-full pl-10 pr-4 py-3 bg-white border border-[#e5e5e5] text-sm text-[#111111] focus:outline-none focus:border-[#111111] font-sans transition-colors placeholder:text-[#999999]"
               />
             </div>
           </div>
@@ -460,12 +409,12 @@ function AuthCard() {
           <div>
             <label
               htmlFor="signupEmail"
-              className="block text-[10px] uppercase tracking-widest text-[#555555] font-mono mb-2 font-bold"
+              className="block text-[10px] uppercase tracking-widest text-[#555555] font-mono mb-1.5 font-bold"
             >
               Email Address *
             </label>
             <div className="relative">
-              <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#777777]" />
+              <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#777777]" />
               <input
                 id="signupEmail"
                 type="email"
@@ -474,7 +423,7 @@ function AuthCard() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@domain.com"
-                className="w-full pl-11 pr-4 py-3 bg-white border border-[#e5e5e5] text-sm text-[#111111] focus:outline-none focus:border-[#111111] font-sans transition-colors placeholder:text-[#999999]"
+                className="w-full pl-10 pr-4 py-3 bg-white border border-[#e5e5e5] text-sm text-[#111111] focus:outline-none focus:border-[#111111] font-sans transition-colors placeholder:text-[#999999]"
               />
             </div>
           </div>
@@ -482,12 +431,12 @@ function AuthCard() {
           <div>
             <label
               htmlFor="signupPassword"
-              className="block text-[10px] uppercase tracking-widest text-[#555555] font-mono mb-2 font-bold"
+              className="block text-[10px] uppercase tracking-widest text-[#555555] font-mono mb-1.5 font-bold"
             >
               Password (Min 6 chars) *
             </label>
             <div className="relative">
-              <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#777777]" />
+              <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#777777]" />
               <input
                 id="signupPassword"
                 type={showPassword ? "text" : "password"}
@@ -496,12 +445,12 @@ function AuthCard() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full pl-11 pr-11 py-3 bg-white border border-[#e5e5e5] text-sm text-[#111111] focus:outline-none focus:border-[#111111] font-sans transition-colors"
+                className="w-full pl-10 pr-10 py-3 bg-white border border-[#e5e5e5] text-sm text-[#111111] focus:outline-none focus:border-[#111111] font-sans transition-colors"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#777777] hover:text-[#111111] p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#777777] hover:text-[#111111] p-1"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -512,12 +461,12 @@ function AuthCard() {
           <div>
             <label
               htmlFor="signupConfirmPassword"
-              className="block text-[10px] uppercase tracking-widest text-[#555555] font-mono mb-2 font-bold"
+              className="block text-[10px] uppercase tracking-widest text-[#555555] font-mono mb-1.5 font-bold"
             >
               Confirm Password *
             </label>
             <div className="relative">
-              <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#777777]" />
+              <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#777777]" />
               <input
                 id="signupConfirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
@@ -526,12 +475,12 @@ function AuthCard() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full pl-11 pr-11 py-3 bg-white border border-[#e5e5e5] text-sm text-[#111111] focus:outline-none focus:border-[#111111] font-sans transition-colors"
+                className="w-full pl-10 pr-10 py-3 bg-white border border-[#e5e5e5] text-sm text-[#111111] focus:outline-none focus:border-[#111111] font-sans transition-colors"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#777777] hover:text-[#111111] p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#777777] hover:text-[#111111] p-1"
                 aria-label={showConfirmPassword ? "Hide password" : "Show password"}
               >
                 {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -542,7 +491,7 @@ function AuthCard() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-[#111111] text-white text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#333333] transition-colors duration-300 flex items-center justify-center gap-2 disabled:opacity-50 mt-2 shadow-subtle"
+            className="w-full py-3.5 bg-[#111111] text-white text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#333333] transition-colors duration-300 flex items-center justify-center gap-2 disabled:opacity-50 mt-2 shadow-subtle cursor-pointer"
           >
             {loading ? (
               <>
@@ -560,7 +509,7 @@ function AuthCard() {
               <button
                 type="button"
                 onClick={() => switchMode("login")}
-                className="text-[#111111] underline hover:text-[#555555] font-semibold ml-1"
+                className="text-[#111111] underline hover:text-[#555555] font-semibold ml-1 cursor-pointer"
               >
                 Sign in here
               </button>
@@ -570,7 +519,7 @@ function AuthCard() {
       )}
 
       {/* Return link */}
-      <div className="mt-8 pt-4 border-t border-[#e5e5e5] text-center">
+      <div className="mt-6 pt-4 border-t border-[#e5e5e5] text-center">
         <Link
           href="/"
           className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest font-mono text-[#555555] hover:text-[#111111] transition-colors"
@@ -588,18 +537,53 @@ export default function AuthPage() {
     <PageTransition>
       <Navbar />
 
-      <main className="flex-grow pt-32 sm:pt-36 bg-[#f7f7f5] text-[#111111] min-h-[calc(100vh-64px)] flex items-center justify-center py-12 px-4 sm:px-6 border-b border-[#e5e5e5]">
-        <FadeIn direction="up" delay={0.1} className="w-full flex justify-center">
-          <Suspense
-            fallback={
-              <div className="w-full max-w-md bg-white border border-[#e5e5e5] p-8 text-center text-[#555555] font-mono text-xs shadow-subtle">
-                Loading Authentication Portal...
+      <main className="flex-grow pt-20 sm:pt-24 bg-[#f7f7f5] text-[#111111] min-h-[calc(100vh-64px)]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[calc(100vh-80px)]">
+          {/* Left: Architectural Glass Image (hidden on mobile) */}
+          <div className="hidden lg:block relative bg-[#111111] overflow-hidden">
+            <div className="absolute inset-0">
+              <img
+                src="/images/why-us/hero-glass.webp"
+                alt="Architectural glass installation"
+                className="w-full h-full object-cover opacity-60"
+                loading="lazy"
+              />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/40 to-transparent" />
+            <div className="absolute bottom-12 left-12 right-12 z-10">
+              <span className="text-[10px] uppercase tracking-[0.3em] font-mono text-white/60 block mb-3">
+                [Secure Access Portal]
+              </span>
+              <h2 className="font-serif text-3xl xl:text-4xl font-light tracking-tight text-white leading-tight mb-4">
+                COMPLETE GLASS <br />
+                <span className="italic font-normal">INNOVATIONS</span>
+              </h2>
+              <p className="text-sm text-white/60 font-sans font-light max-w-sm leading-relaxed">
+                Premium architectural glass solutions engineered for modern Australian residences and commercial spaces.
+              </p>
+              <div className="flex items-center gap-4 mt-6 pt-4 border-t border-white/10">
+                <span className="text-[9px] uppercase tracking-widest font-mono text-white/40">AS1288 Certified</span>
+                <span className="text-white/20">|</span>
+                <span className="text-[9px] uppercase tracking-widest font-mono text-white/40">Australian Owned</span>
               </div>
-            }
-          >
-            <AuthCard />
-          </Suspense>
-        </FadeIn>
+            </div>
+          </div>
+
+          {/* Right: Auth Form */}
+          <div className="flex items-center justify-center py-10 px-4 sm:px-6 lg:px-12">
+            <FadeIn direction="up" delay={0.1} className="w-full flex justify-center">
+              <Suspense
+                fallback={
+                  <div className="w-full max-w-[420px] bg-white border border-[#e5e5e5] p-8 text-center text-[#555555] font-mono text-xs shadow-subtle">
+                    Loading Authentication Portal...
+                  </div>
+                }
+              >
+                <AuthCard />
+              </Suspense>
+            </FadeIn>
+          </div>
+        </div>
       </main>
 
       <Footer />
